@@ -1,0 +1,111 @@
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+    background: #EDE0D4; /* Background */
+    color: #222020; /* Text */
+}
+
+/* Welcome Section */
+#welcome {
+    height: 100vh;
+    background: url('https://source.unsplash.com/1600x900/?food,restaurant') no-repeat center center/cover;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.7);
+}
+
+#welcome button {
+    padding: 12px 24px;
+    font-size: 18px;
+    border: none;
+    background: #6A994E; /* Primary */
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-top: 20px;
+    transition: 0.3s;
+}
+
+#welcome button:hover {
+    background: #5a8843;
+}
+
+/* Login Section */
+#login-section {
+    height: 100vh;
+    background: #EDE0D4; /* Background */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#login-section h2 {
+    color: #222020;
+}
+
+.login-options {
+    display: flex;
+    justify-content: center;
+    gap: 50px;
+}
+
+/* Login Box */
+.login-box {
+    background: white;
+    padding: 20px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    text-align: center;
+    width: 250px;
+}
+
+.login-box h3 {
+    color: #6A994E; /* Primary */
+}
+
+input {
+    display: block;
+    margin: 10px auto;
+    padding: 10px;
+    width: 90%;
+    border: 1px solid #6A994E; /* Primary */
+    border-radius: 5px;
+}
+
+button {
+    display: block;
+    margin: 10px auto;
+    padding: 10px;
+    width: 100%;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+/* Register Button */
+button:first-of-type {
+    background: #AEEC89; /* Secondary */
+    color: #222020;
+}
+
+button:first-of-type:hover {
+    background: #98d979;
+}
+
+/* Login Button */
+button:last-of-type {
+    background: #D1495B; /* Accent */
+    color: white;
+}
+
+button:last-of-type:hover {
+    background: #b0384a;
+}
