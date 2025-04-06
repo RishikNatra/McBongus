@@ -3,27 +3,167 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>McBongu's</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <title>McBongu's Food Delivery</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles-home.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Bacasime+Antique&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Welcome to McBongu's</h1>
-        <p>Your favorite food, delivered fast!</p>
-        <button class="btn">Get Started</button>
-
-        <h2>Login</h2>
-        <h3>User Login</h3>
-        <input type="text" placeholder="Username">
-        <input type="password" placeholder="Password">
-        <button class="btn">Register</button>
-        <button class="btn">Login</button>
-
-        <h3>Delivery Partner Login</h3>
-        <input type="text" placeholder="Username">
-        <input type="password" placeholder="Password">
-        <button class="btn">Register</button>
-        <button class="btn">Login</button>
+    <div class="top-bar">
+        <div class="mc">
+            McBongu's
+        </div>
+        <div class="nav-links">
+            <a href="/" class="active">Home</a>
+            <a href="/user-login">Restaurants</a>
+            <a href="/user-login">Offers</a>
+            <a href="/about">About Us</a>
+        </div>
+        <button class="top-button">
+            <img src="{{ url_for('static', filename='images/bar.png') }}" alt="Menu">
+        </button>
     </div>
+    
+    <div class="below-bar"></div>
+
+    <div class="hero-section">
+        <div class="hero-content">
+            <h1>McBongu's</h1>
+            <p class="tagline">Fresh Food. Fast Service.</p>
+            <div class="search-container">
+                <input type="text" placeholder="Search for food or restaurants...">
+                <button class="search-btn"><i class="fas fa-search"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <div class="categories">
+        <h2>What are you craving today?</h2>
+        <div class="category-icons">
+            <div class="category-item">
+                <div class="category-icon">
+                    <img src="/static/images/burger.png" alt="Burger">
+                </div>
+                <span>Burgers</span>
+            </div>
+            <div class="category-item">
+                <div class="category-icon">
+                    <img src="/static/images/pizza.png" alt="Pizza">
+                </div>
+                <span>Pizza</span>
+            </div>
+            <div class="category-item">
+                <div class="category-icon">
+                    <img src="/static/images/chicken.png" alt="Chicken">
+                </div>
+                <span>Chicken</span>
+            </div>
+            <div class="category-item">
+                <div class="category-icon">
+                    <img src="/static/images/breakfast.png" alt="Breakfast">
+                </div>
+                <span>Breakfast</span>
+            </div>
+            <div class="category-item">
+                <div class="category-icon">
+                    <img src="/static/images/dessert.png" alt="Dessert">
+                </div>
+                <span>Dessert</span>
+            </div>
+        </div>
+    </div>
+    
+
+    <div class="button-container">
+        <a href="/user-login" class="btn">
+            <div class="btn-inner">
+                <img src="{{ url_for('static', filename='images/user.png') }}" alt="User Login">
+                <span>User Login</span>
+            </div>
+        </a>
+        <a href="/bongu-login" class="btn">
+            <div class="btn-inner">
+                <img src="{{ url_for('static', filename='images/location.png') }}" alt="Bongu Login">
+                <span>Bongu Login</span>
+            </div>
+        </a>
+        <a href="/restaurant-login" class="btn">
+            <div class="btn-inner">
+                <img src="{{ url_for('static', filename='images/fork.png') }}" alt="Restaurant Login">
+                <span>Restaurants</span>
+            </div>
+        </a>
+    </div>
+
+    <div class="featured-restaurants">
+        <h2>Popular Restaurants</h2>
+        <div class="restaurant-cards">
+            <div class="restaurant-card">
+                <div class="restaurant-image"></div>
+                <div class="restaurant-info">
+                    <h3>The S Jail Hotel</h3>
+                    <div class="rating">
+                        <span>3.7 ★</span>
+                    </div>
+                    <p>Get arrested with food</p>
+                    <span class="delivery-time"><i class="fas fa-clock"></i> 25-35 min</span>
+                </div>
+            </div>
+            <div class="restaurant-card">
+                <div class="restaurant-image"></div>
+                <div class="restaurant-info">
+                    <h3>KFC</h3>
+                    <div class="rating">
+                        <span>4.0 ★</span>
+                    </div>
+                    <p>It's finger lickin' good!</p>
+                    <span class="delivery-time"><i class="fas fa-clock"></i> 30-45 min</span>
+                </div>
+            </div>
+            <div class="restaurant-card">
+                <div class="restaurant-image"></div>
+                <div class="restaurant-info">
+                    <h3>Pizza Hut</h3>
+                    <div class="rating">
+                        <span>4.3 ★</span>
+                    </div>
+                    <p>The best pizzas under one roof!</p>
+                    <span class="delivery-time"><i class="fas fa-clock"></i> 40-55 min</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>McBongu's</h4>
+                <p>The best food delivery service in town. Fast, fresh, and friendly.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="/about">About Us</a></li>
+                    <li><a href="/about">Contact</a></li>
+                    <li><a href="/about">FAQ</a></li>
+                    <li><a href="/about">Terms of Service</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Contact Us</h4>
+                <p><i class="fas fa-map-marker-alt"></i> 123 Delivery St, Food City</p>
+                <p><i class="fas fa-phone"></i> (555) 123-4567</p>
+                <p><i class="fas fa-envelope"></i> rishik.natra.work@gmail</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2025 McBongu's - All Rights Reserved</p>
+            <div class="social-icons">
+                <a href="#"><i class="fab fa-facebook-f"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+            </div>
+        </div>
+    </footer>
 </body>
 </html>

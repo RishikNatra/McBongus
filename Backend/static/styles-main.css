@@ -1,0 +1,467 @@
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background-color: #EDE0D4;
+    color: #222020;
+    line-height: 1.6;
+}
+
+/* Top bar styling */
+.top-bar {
+    background: linear-gradient(135deg, #6A994E, #AEEC89);
+    height: 70px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 5%;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    position: fixed;
+    width: 90%;
+    top: 0;
+    z-index: 100;
+}
+
+.mc {
+    font-family: 'Bacasime Antique', serif;
+    font-size: 28px;
+    font-weight: bold;
+    color: #FFF8E8;
+    letter-spacing: 2px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.mc a {
+    color: #FFF8E8;
+    text-decoration: none;
+}
+
+.nav-links {
+    display: flex;
+    gap: 20px;
+}
+
+.nav-links a {
+    color: #FFF8E8;
+    text-decoration: none;
+    font-weight: 500;
+    position: relative;
+    padding: 5px 0;
+}
+
+.nav-links a::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: 0;
+    left: 0;
+    background-color: #FFF8E8;
+    transition: width 0.3s ease;
+}
+
+.nav-links a:hover::after,
+.nav-links a.active::after {
+    width: 100%;
+}
+
+.top-button {
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid #FFF8E8;
+    border-radius: 50%;
+    padding: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: none;
+}
+
+.top-button:hover {
+    transform: rotate(90deg);
+    background-color: #FFF8E8;
+}
+
+.top-button img {
+    width: 24px;
+    height: 24px;
+    filter: brightness(0.8);
+}
+
+/* Container */
+.container {
+    max-width: 1200px;
+    margin: 100px auto 40px;
+    padding: 20px;
+}
+
+h1 {
+    font-family: 'Bacasime Antique', serif;
+    font-size: 2.5rem;
+    color: #222020;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+/* Restaurant Grid */
+.restaurant-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 30px;
+}
+
+/* Restaurant Card */
+.restaurant-card {
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background-color: #FFF8E8;
+}
+
+.restaurant-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+}
+
+.card-inner {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.restaurant-card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+}
+
+.card-content {
+    padding: 20px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.card-content h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 1.4rem;
+    color: #222020;
+}
+
+.card-content p {
+    color: #666;
+    margin-bottom: 15px;
+    flex-grow: 1;
+}
+
+.card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+}
+
+.rating {
+    color: #FFB800;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+}
+
+.view-menu {
+    background-color: #6A994E;
+    color: #FFF8E8;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.3s;
+}
+
+.view-menu:hover {
+    background-color: #538d22;
+}
+
+/* Menu Modal */
+.menu-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+    overflow-y: auto;
+}
+
+.menu-content {
+    background: #FFF8E8;
+    margin: 10% auto;
+    padding: 30px;
+    width: 80%;
+    max-width: 600px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    position: relative;
+}
+
+.menu-content h2 {
+    color: #222020;
+    margin-top: 0;
+    font-family: 'Bacasime Antique', serif;
+}
+
+.menu-content p {
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.menu-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.menu-item:last-child {
+    border-bottom: none;
+}
+
+.total-price {
+    font-weight: bold;
+    font-size: 1.2rem;
+    margin: 20px 0;
+    color: #222020;
+}
+
+#proceedToPayment {
+    background-color: #D1495B;
+    color: #FFF8E8;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    margin-right: 10px;
+    transition: background-color 0.3s;
+}
+
+#proceedToPayment:hover {
+    background-color: #bc3a4b;
+}
+
+.menu-content > button {
+    background-color: #6A994E;
+    color: #FFF8E8;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.menu-content > button:hover {
+    background-color: #538d22;
+}
+
+.payment-gateway {
+    display: none;
+    background-color: #f5f5f5;
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 20px;
+}
+
+.payment-gateway h3 {
+    margin-top: 0;
+    color: #222020;
+}
+
+.payment-gateway button {
+    background-color: #6A994E;
+    color: #FFF8E8;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 15px;
+}
+
+/* Footer styling */
+.footer {
+    background-color: #6A994E;
+    color: #FFF8E8;
+    padding: 40px 0 0;
+    margin-top: 60px;
+}
+
+.footer-content {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.footer-section {
+    flex: 1;
+    min-width: 250px;
+    margin-bottom: 30px;
+}
+
+.footer-section h4 {
+    font-size: 18px;
+    margin-bottom: 20px;
+    position: relative;
+    padding-bottom: 10px;
+}
+
+.footer-section h4::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 2px;
+    width: 50px;
+    background-color: #AEEC89;
+}
+
+.footer-section ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.footer-section ul li {
+    margin-bottom: 10px;
+}
+
+.footer-section a {
+    color: #FFF8E8;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.footer-section a:hover {
+    color: #AEEC89;
+}
+
+.footer-section p {
+    margin: 10px 0;
+}
+
+.footer-section p i {
+    margin-right: 10px;
+    color: #AEEC89;
+}
+
+.footer-bottom {
+    background-color: rgba(0, 0, 0, 0.1);
+    padding: 20px 0;
+    margin-top: 30px;
+    text-align: center;
+}
+
+.social-icons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 15px;
+}
+
+.social-icons a {
+    color: #FFF8E8;
+    font-size: 20px;
+    transition: all 0.3s;
+}
+
+.social-icons a:hover {
+    color: #AEEC89;
+    transform: translateY(-5px);
+}
+
+/* Responsive design */
+@media (max-width: 900px) {
+    .nav-links {
+        display: none;
+    }
+    
+    .top-button {
+        display: block;
+    }
+}
+
+@media (max-width: 768px) {
+    .menu-content {
+        width: 90%;
+        padding: 20px;
+    }
+
+    .restaurant-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 2rem;
+    }
+
+    .top-bar {
+        height: 60px;
+    }
+
+    .mc {
+        font-size: 22px;
+    }
+
+    .container {
+        margin-top: 80px;
+        padding: 15px;
+    }
+
+    .restaurant-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .menu-content {
+        margin: 15% auto;
+        width: 95%;
+        padding: 15px;
+    }
+}
+
+.status-timeline {
+    display: flex;
+    justify-content: space-between;
+    margin: 20px 0;
+    position: relative;
+}
+
+.status-timeline::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: #ddd;
+    z-index: 0;
+}
+
+.timeline-step {
+    background: #AEEC89;
+    padding: 10px;
+    border-radius: 5px;
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    flex: 1;
+    margin: 0 5px;
+}
+
+.timeline-step.active {
+    background: #6A994E;
+    color: white;
+}

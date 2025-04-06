@@ -1,9 +1,14 @@
 from flask import Blueprint, jsonify
-from db import cursor
+import mysql.connector
 
-menu = Blueprint('menu', __name__)
+menu_bp = Blueprint('menu_bp', __name__)
 
-@menu.route('/menu/<int:restaurant_id>', methods=['GET'])
-def get_menu(restaurant_id):
-    cursor.execute("SELECT * FROM Menu WHERE restaurant_id = %s", (restaurant_id,))
-    return jsonify(cursor.fetchall())
+# Database connection
+db = mysql.connector.connect(
+    host="localhost",
+    user="root",
+    password="Rishik@1429145",
+    database="McBongus_DB"
+)
+
+

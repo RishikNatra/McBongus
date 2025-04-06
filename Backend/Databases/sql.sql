@@ -1,3 +1,4 @@
+
 CREATE DATABASE McBongus_DB;
 USE McBongus_DB;
 
@@ -5,30 +6,45 @@ USE McBongus_DB;
 CREATE TABLE Users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    email VARCHAR(100) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
     role ENUM('customer', 'admin', 'restaurant_owner', 'delivery_partner') NOT NULL
+);
+
+CREATE TABLE Bongus (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL
 );
 
 -- Restaurants Table
 CREATE TABLE Restaurants (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    id INT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     location VARCHAR(255) NOT NULL,
-    owner_id INT NOT NULL,
-    FOREIGN KEY (owner_id) REFERENCES Users(id) ON DELETE CASCADE
+    username VARCHAR(50) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    rating DECIMAL(2,1)
 );
 
--- Menu Table
+CREATE TABLE RestaurantRequests (
+    id INT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    location VARCHAR(255) NOT NULL,
+    contact VARCHAR(50) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL
+);
+
+
 CREATE TABLE Menu (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    restaurant_id INT NOT NULL,
+    id INT PRIMARY KEY,
+    restaurant_id INT NOT NULL, 
     item_name VARCHAR(100) NOT NULL,
     price DECIMAL(10,2) NOT NULL,
     availability BOOLEAN DEFAULT TRUE,
     FOREIGN KEY (restaurant_id) REFERENCES Restaurants(id) ON DELETE CASCADE
 );
-
+Menu Table
 -- Orders Table
 CREATE TABLE Orders (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -73,47 +89,3 @@ CREATE TABLE Delivery (
     FOREIGN KEY (driver_id) REFERENCES Users(id) ON DELETE SET NULL
 );
 
--- Use the database
-USE McBongus_DB;
-
--- Insert Users (Customers, Admin, Restaurant Owners, Delivery Partners)
-INSERT INTO Users (name, email, password, role) VALUES
-('John Doe', 'john@example.com', 'hashedpassword1', 'customer'),
-('Jane Smith', 'jane@example.com', 'hashedpassword2', 'customer'),
-('Admin User', 'admin@example.com', 'adminpassword', 'admin'),
-('Resto Owner', 'owner@example.com', 'ownerpassword', 'restaurant_owner'),
-('Delivery Guy', 'delivery@example.com', 'deliverypassword', 'delivery_partner');
-
--- Insert Restaurants
-INSERT INTO Restaurants (name, location, owner_id) VALUES
-('Bongu’s Pizza', '123 College Street', 4),
-('Burger Land', '456 University Road', 4);
-
--- Insert Menu Items
-INSERT INTO Menu (restaurant_id, item_name, price, availability) VALUES
-(1, 'Margherita Pizza', 8.99, TRUE),
-(1, 'Pepperoni Pizza', 10.99, TRUE),
-(1, 'Veggie Pizza', 9.49, TRUE),
-(2, 'Classic Burger', 5.99, TRUE),
-(2, 'Cheese Burger', 6.99, TRUE),
-(2, 'Chicken Burger', 7.99, TRUE);
-
--- Insert Orders
-INSERT INTO Orders (user_id, restaurant_id, status, total_price) VALUES
-(1, 1, 'pending', 19.98),
-(2, 2, 'confirmed', 12.99);
-
--- Insert Order Items (Linking Orders & Menu)
-INSERT INTO Order_Items (order_id, menu_id, quantity, price) VALUES
-(1, 1, 2, 17.98),
-(2, 4, 2, 11.98);
-
--- Insert Payments
-INSERT INTO Payments (order_id, payment_status, transaction_id) VALUES
-(1, 'completed', 'TXN123456'),
-(2, 'pending', 'TXN789101');
-
--- Insert Delivery Assignments
-INSERT INTO Delivery (order_id, delivery_status, driver_id, delivery_time) VALUES
-(1, 'out_for_delivery', 5, NOW()),
-(2, 'pending', NULL, NULL);

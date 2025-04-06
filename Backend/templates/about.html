@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>McBongu's Food Delivery</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles-home.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Bacasime+Antique&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="top-bar">
+        <div class="mc">
+            <a href="/">McBongu's</a>   
+        </div>
+        <div class="nav-links">
+            <a href="/" class="active">Home</a>
+            <a href="/restaurants">Restaurants</a>
+            <a href="/restaurants">Offers</a>
+            <a href="/about">About Us</a>
+        </div>
+        <button class="top-button">
+            <img src="{{ url_for('static', filename='images/bar.png') }}" alt="Menu">
+        </button>
+    </div>
+    
+    <div class="below-bar"></div>
+
+    <div class="hero-section">
+        <div class="hero-content">
+            <h1>About McBongu's</h1>
+            <p class="tagline">We are a small team making a course project based in Indian Institute of Information Technology Dharwad.</p>
+            <p class="tagline"> You can contact me at rishik.natra.work@gmail.com.</p>
+        </div>
+    </div>
+
+
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>McBongu's</h4>
+                <p>The best food delivery service in town. Fast, fresh, and friendly.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="/about">About Us</a></li>
+                    <li><a href="/about">Contact</a></li>
+                    <li><a href="/about">FAQ</a></li>
+                    <li><a href="/about">Terms of Service</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Contact Us</h4>
+                <p><i class="fas fa-map-marker-alt"></i> 123 Delivery St, Food City</p>
+                <p><i class="fas fa-phone"></i> (555) 123-4567</p>
+                <p><i class="fas fa-envelope"></i> info@mcbongus.com</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2025 McBongu's - All Rights Reserved</p>
+            <div class="social-icons">
+                <a href="#"><i class="fab fa-facebook-f"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

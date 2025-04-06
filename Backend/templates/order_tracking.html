@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Tracking - McBongu's</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles-main.css') }}">
+</head>
+<body>
+    <div class="top-bar">
+        <div class="mc"><a href="/">McBongu's</a></div>
+    </div>
+    <div class="container">
+        <h1>Order Tracking</h1>
+        <div id="order-details">
+            <p>Order ID: <span id="orderId"></span></p>
+            <p>Restaurant: <span id="restaurantName"></span></p>
+            <p>Total: ₹<span id="totalPrice"></span></p>
+            <p>Order Status: <span id="orderStatus"></span></p>
+            <p>Delivery Status: <span id="deliveryStatus"></span></p>
+            <p>Estimated Delivery: <span id="deliveryTime"></span></p>
+        </div>
+        <div class="status-timeline">
+            <div class="timeline-step" id="step-pending">Order Placed</div>
+            <div class="timeline-step" id="step-preparing">Preparing</div>
+            <div class="timeline-step" id="step-out_for_delivery">On Its Way</div>
+            <div class="timeline-step" id="step-delivered">Delivered</div>
+        </div>
+        <div class="map-placeholder" style="width: 100%; height: 300px; text-align: center;">
+            <img src="{{ url_for('static', filename='images/map-placeholder.png') }}" alt="Map"> 
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const orderId = window.location.pathname.split('/').pop();
+            console.log('Order ID:', orderId);
+
+            // Map order status to user-friendly messages
+            const statusMessages = {
+                'pending': 'Order is pending restaurant approval',
+                'restaurant_accepted': 'Order accepted by restaurant, awaiting Bongu approval',
+                'canceled_awaiting_refund': 'Order canceled by restaurant, expecting refund',
+                'bongu_accepted': 'Order accepted by Bongu, in delivery',
+                'delivered': 'Order delivered',
+                'canceled': 'Order canceled (refund processed)'
+            };
+
+            // Map order status to timeline steps
+            const statusToStep = {
+                'pending': 'pending',
+                'restaurant_accepted': 'pending',  // Still waiting for Bongu
+                'canceled_awaiting_refund': 'pending',  // Canceled, no further steps
+                'bongu_accepted': 'preparing',  // Preparing or out for delivery
+                'delivered': 'delivered',
+                'canceled': 'pending'  // Canceled, no further steps
+            };
+
+            // Map delivery status to timeline steps (if applicable)
+            const deliveryStatusToStep = {
+                'preparing': 'preparing',
+                'out_for_delivery': 'out_for_delivery',
+                'delivered': 'delivered',
+                'failed': 'pending'  // Failed delivery, no further steps
+            };
+
+            async function updateStatus() {
+                try {
+                    const response = await fetch(`/order_status/${orderId}`);
+                    console.log('Fetch Response:', response);
+                    const order = await response.json();
+                    console.log('Order Data:', order);
+                    if (response.ok) {
+                        document.getElementById('orderId').textContent = order.id;
+                        document.getElementById('restaurantName').textContent = order.restaurant_name;
+                        document.getElementById('totalPrice').textContent = order.total_price;
+                        document.getElementById('orderStatus').textContent = statusMessages[order.status] || order.status;
+                        document.getElementById('deliveryStatus').textContent = order.delivery_status;
+                        document.getElementById('deliveryTime').textContent = order.delivery_time;
+
+                        // Update timeline based on order status and delivery status
+                        const steps = ['pending', 'preparing', 'out_for_delivery', 'delivered'];
+                        let activeStep = statusToStep[order.status] || 'pending';
+                        if (order.status === 'bongu_accepted' && order.delivery_status) {
+                            activeStep = deliveryStatusToStep[order.delivery_status] || activeStep;
+                        }
+
+                        steps.forEach(step => {
+                            const element = document.getElementById(`step-${step}`);
+                            if (step === activeStep) {
+                                element.classList.add('active');
+                            } else {
+                                element.classList.remove('active');
+                            }
+                        });
+                    } else {
+                        console.error('Fetch failed:', order.error);
+                    }
+                } catch (error) {
+                    console.error('Error fetching order status:', error);
+                }
+            }
+            updateStatus();
+            setInterval(updateStatus, 5000); // Refresh every 5 seconds
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Login - McBongu's</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles-user.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Bacasime+Antique&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="top-bar">
+        <div class="mc">
+            <a href="/">McBongu's</a>
+        </div>
+        <div class="nav-links">
+            <a href="/" class="active">Home</a>
+            <a href="/restaurants">Restaurants</a>
+            <a href="/restaurants">Offers</a>
+            <a href="/about">About Us</a>
+        </div>
+        <button class="top-button">
+            <img src="{{ url_for('static', filename='images/bar.png') }}" alt="Menu">
+        </button>
+    </div>
+
+    <div class="container">
+        <h1>User Login</h1>
+        <div class="login-container">
+            <form id="loginForm" method="POST" action="{{ url_for('auth.user_login') }}">
+                <div class="input-group">
+                    <span class="input-icon"><i class="fas fa-user"></i></span>
+                    <input type="text" name="name" placeholder="Name" required>
+                </div>
+                <div class="input-group">
+                    <span class="input-icon"><i class="fas fa-at"></i></span>
+                    <input type="text" name="username" placeholder="Username" required>
+                </div>
+                <div class="input-group">
+                    <span class="input-icon"><i class="fas fa-lock"></i></span>
+                    <input type="password" name="password" placeholder="Password" required>
+                    <span class="password-toggle"><i class="fas fa-eye"></i></span>
+                </div>
+                <div class="remember-forgot">
+                    <label>
+                        <input type="checkbox"> Remember me
+                    </label>
+                    <a href="#">Forgot Password?</a>
+                </div>
+                <div class="login-buttons">
+                    <button type="submit" class="btn" name="action" value="register">Register</button>
+                    <button type="submit" class="btn" name="action" value="login">Login</button>
+                </div>
+                <div class="social-login">
+                    <p>Or login with</p>
+                    <div class="social-icons">
+                        <a href="#" class="social-icon"><i class="fab fa-google"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-apple"></i></a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        document.querySelector('.password-toggle').addEventListener('click', function() {
+            const passwordInput = document.querySelector('input[name="password"]');
+            const icon = this.querySelector('i');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        });
+    </script>
+</body>
+</html>

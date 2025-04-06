@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>McBongu's - Dharwad Restaurant Guide</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles-main.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Bacasime+Antique&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="top-bar">
+        <div class="mc">
+            <a href="/">McBongu's</a>
+        </div>
+        <div class="nav-links">
+            <<a href="/" class="active">Home</a>
+            <a href="/restaurants">Restaurants</a>
+            <a href="/restaurants">Offers</a>
+            <a href="/about">About Us</a>
+        </div>
+        <button class="top-button">
+            <img src="{{ url_for('static', filename='images/bar.png') }}" alt="Menu">
+        </button>
+    </div>
+    
+    <div class="container">
+        <h1>Browse Restaurants</h1>
+        <div class="restaurant-grid">
+            <!-- Example Restaurant Card -->
+            <div class="restaurant-card" data-restaurant-id="1" data-restaurant-name="The S Jail Hotel" data-rating="3.7">
+                <div class="card-inner">
+                    <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=500&q=60" alt="S Jail">
+                    <div class="card-content">
+                        <h3>The S Jail Hotel</h3>
+                        <p>Get arrested with food</p>
+                        <div class="card-footer">
+                            <span class="rating">3.7 ★</span>
+                            <button class="view-menu">View Menu</button>
+                        </div>
+                    </div>
+                </div>  
+            </div>
+            <!-- Add other restaurant cards similarly with data attributes -->
+            <div class="restaurant-card" data-restaurant-id="2" data-restaurant-name="KFC" data-rating="4.0">
+                <div class="card-inner">
+                    <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=500&q=60" alt="S Jail">
+                    <div class="card-content">
+                        <h3>KFC</h3>
+                        <p>It's finger lickin' good!</p>
+                        <div class="card-footer">
+                            <span class="rating">4.0 ★</span>
+                            <button class="view-menu">View Menu</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="restaurant-card" data-restaurant-id="3" data-restaurant-name="Disha Darshini" data-rating="4.6">
+                <div class="card-inner">
+                    <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=500&q=60" alt="S Jail">
+                    <div class="card-content">
+                        <h3>Disha Darshini</h3>
+                        <p>Quality breakfast!</p>
+                        <div class="card-footer">
+                            <span class="rating">4.6 ★</span>
+                            <button class="view-menu">View Menu</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Menu Modal -->
+    <div class="menu-modal" id="menuModal">
+        <div class="menu-content">
+            <h2 id="restaurantName"></h2>
+            <p id="restaurantRating"></p>
+            <div id="menuItems"></div>
+            <div class="total-price" id="totalPrice">Total: ₹0.00</div>
+            <button id="proceedToPayment">Proceed to Payment</button>
+            <div class="payment-gateway" id="paymentGateway">
+                <h3>Payment Gateway</h3>
+                <p>Simulated Payment Screen (Integration with real gateway like Razorpay/Stripe would go here)</p>
+                <button onclick="alert('Payment Successful!'); document.getElementById('menuModal').style.display='none';">Pay Now</button>
+            </div>
+            <button onclick="document.getElementById('menuModal').style.display='none'">Close</button>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>About Us</h4>
+                <p>McBongu's helps you discover the best restaurants in Dharwad with user reviews and ratings.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="#">Restaurants</a></li>
+                    <li><a href="#">Offers</a></li>
+                    <li><a href="/about">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Contact</h4>
+                <p><i class="fas fa-phone"></i> +91 1234567890</p>
+                <p><i class="fas fa-envelope"></i> rishik.natra.work@gmail.com</p>
+                <p><i class="fas fa-map-marker-alt"></i> Dharwad, Karnataka</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 McBongu's. All rights reserved.</p>
+            <div class="social-icons">
+                <a href="#"><i class="fab fa-facebook-f"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Inside the <script> tag in main.html -->
+    <script>
+        document.querySelectorAll('.view-menu').forEach(button => {
+            button.addEventListener('click', async (e) => {
+                const card = e.target.closest('.restaurant-card');
+                const restaurantId = card.dataset.restaurantId;
+                const restaurantName = card.dataset.restaurantName;
+                const rating = card.dataset.rating;
+
+                const modal = document.getElementById('menuModal');
+                document.getElementById('restaurantName').textContent = restaurantName;
+                document.getElementById('restaurantRating').textContent = `Rating: ${rating} ★`;
+                modal.style.display = 'block';
+
+                const response = await fetch(`/menu/${restaurantId}`);
+                const menuItems = await response.json();
+
+                const menuContainer = document.getElementById('menuItems');
+                menuContainer.innerHTML = '';
+                let total = 0;
+
+                menuItems.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'menu-item';
+                    div.innerHTML = `
+                        <span>${item.item_name} - ₹${item.price}</span>
+                        <input type="checkbox" data-price="${item.price}" data-id="${item.id}" onchange="updateTotal()">
+                    `;
+                    menuContainer.appendChild(div);
+                });
+
+                window.updateTotal = () => {
+                    total = 0;
+                    document.querySelectorAll('#menuItems input:checked').forEach(checkbox => {
+                        total += parseFloat(checkbox.dataset.price);
+                    });
+                    document.getElementById('totalPrice').textContent = `Total: ₹${total.toFixed(2)}`;
+                };
+
+                document.getElementById('proceedToPayment').onclick = () => {
+                    if (total > 0) {
+                        document.getElementById('paymentGateway').style.display = 'block';
+                    } else {
+                        alert('Please select at least one item to proceed.');
+                    }
+                };
+
+                document.querySelector('#paymentGateway button').onclick = async () => {
+                    const selectedItems = [];
+                    document.querySelectorAll('#menuItems input:checked').forEach(checkbox => {
+                        selectedItems.push({
+                            menu_id: checkbox.dataset.id,
+                            quantity: 1  // You can add a quantity input if needed
+                        });
+                    });
+
+                    const orderData = {
+                        restaurant_id: restaurantId,
+                        items: selectedItems,
+                        total_price: total
+                    };
+                    console.log('Sending order data:', orderData);
+                    const response = await fetch('/place_order', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(orderData)
+                    });
+                    const result = await response.json();
+
+                    if (response.ok) {
+                        alert('Payment Successful! Order placed.');
+                        window.location.href = `/order_tracking/${result.order_id}`;
+                    } else {
+                        alert('Order placement failed: ' + result.error);
+                    }
+                    modal.style.display = 'none';
+
+                    
+                };
+            });
+        });
+    </script>
+</body>
+</html>

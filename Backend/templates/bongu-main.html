@@ -1,0 +1,71 @@
+<!DOCTYPE html><html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bongu Dashboard - McBongu's</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles-main.css') }}">
+</head>
+<body>
+    <div class="top-bar">
+        <div class="mc"><a href="/">McBongu's</a></div>
+        <div class="nav-links">
+            <a href="/bongu/orders" class="active">Orders</a>
+            <a href="/logout">Logout</a>
+        </div>
+    </div>
+    <div class="container">
+        <h1>Available Orders</h1>
+        <div class="order-list">
+            {% if orders %}
+                {% for order in orders %}
+                <div class="order-card">
+                    <h3>Order #{{ order.id }}</h3>
+                    <p>Restaurant: {{ order.restaurant_name }}</p>
+                    <p>Customer: {{ order.customer_name }}</p>
+                    <p>Total: ₹{{ order.total_price }}</p>
+                    <p>Status: {{ order.status }}</p>
+                    <button onclick="acceptOrder({{ order.id }})">Accept Order</button>
+                    <form onsubmit="updateStatus(event, {{ order.id }})">
+                        <select name="status">
+                            <option value="preparing">Order is being prepared</option>
+                            <option value="out_for_delivery">Collected order / On its way</option>
+                            <option value="delivered">Order delivered</option>
+                            <option value="failed">Delivery failed</option>
+                        </select>
+                        <button type="submit">Update Status</button>
+                    </form>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p>No available orders to display.</p>
+            {% endif %}
+        </div>
+    </div>
+    <script>
+        async function acceptOrder(orderId) {
+            const response = await fetch(`/bongu/accept_order/${orderId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            const result = await response.json();
+            alert(result.message);
+            location.reload();
+        }
+    async function updateStatus(event, orderId) {
+        event.preventDefault();
+        const form = event.target;
+        const status = form.querySelector('select').value;
+        const response = await fetch(`/bongu/update_delivery/${orderId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `status=${status}`
+        });
+        const result = await response.json();
+        alert(result.message);
+        location.reload();
+    }
+</script>
+
+</body>
+</html>
+
