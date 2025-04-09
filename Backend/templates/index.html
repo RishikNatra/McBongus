@@ -32,10 +32,13 @@
             <p class="tagline">Fresh Food. Fast Service.</p>
             <div class="search-container">
                 <input type="text" placeholder="Search for food or restaurants...">
-                <button class="search-btn"><i class="fas fa-search"></i></button>
+                <button class="search-btn">
+                    <img src="/static/images/glass.png" alt="glass" style="height: 30px; width: 30px;">
+                </button>
             </div>
         </div>
     </div>
+    
 
     <div class="categories">
         <h2>What are you craving today?</h2>
@@ -90,7 +93,7 @@
         <a href="/restaurant-login" class="btn">
             <div class="btn-inner">
                 <img src="{{ url_for('static', filename='images/fork.png') }}" alt="Restaurant Login">
-                <span>For Restaurants</span>
+                <span>Restaurants</span>
             </div>
         </a>
     </div>
