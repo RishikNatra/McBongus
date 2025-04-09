@@ -166,21 +166,11 @@ def order_status(order_id):
         conn.close()
         return jsonify({"error": "Order not found"}), 404
 
-    # Map status to user-friendly message
-    status_messages = {
-        'pending': 'pending',
-        'restaurant_accepted': 'restaurant_accepted',
-        'canceled_awaiting_refund': 'canceled_awaiting_refund',
-        'bongu_accepted': 'bongu_accepted',
-        'delivered': 'delivered',
-        'canceled': 'canceled'
-    }
-
     order_details = {
         'id': order['id'],
         'restaurant_name': order['restaurant_name'],
         'total_price': float(order['total_price']),  # Convert Decimal to float for JSON
-        'status': status_messages.get(order['status'], 'Unknown status'),
+        'status': order['status'],  # Return raw status from Orders table
         'delivery_status': order['delivery_status'] if order['delivery_status'] else 'Not assigned',
         'delivery_time': order['delivery_time'].isoformat() if order['delivery_time'] else 'Pending',
         'bongu_name': order['bongu_name'] if order['bongu_name'] else 'Not yet assigned'

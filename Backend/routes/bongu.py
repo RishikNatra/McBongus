@@ -167,18 +167,41 @@ def update_delivery(order_id):
         if result[1] != session['bongu_id'] or result[0] not in ('bongu_accepted', 'preparing', 'out_for_delivery'):
             return jsonify({"error": "Order not assigned to you or not in a state to update"}), 403
 
-        # Map form status to database status (direct mapping)
-        order_status = status  # Use the form value directly since it's now in the ENUM
-
-        # Update to final states if applicable
+        # Map form status to database status
+        order_status = status  # Use the form value directly since it's in the ENUM
         if status == 'delivered':
             order_status = 'delivered'
         elif status == 'failed':
             order_status = 'canceled'
 
+        # Update Orders table
         cursor.execute("UPDATE Orders SET status = %s WHERE id = %s", (order_status, order_id))
-        if cursor.rowcount == 0:
-            return jsonify({"error": "Failed to update status"}), 500
+
+        # Update or insert into Delivery table
+        cursor.execute("SELECT id FROM Delivery WHERE order_id = %s", (order_id,))
+        delivery = cursor.fetchone()
+        if delivery:
+            if order_status in ('delivered', 'canceled'):  # 'canceled' corresponds to 'failed'
+                cursor.execute("""
+                    UPDATE Delivery SET delivery_status = %s, delivery_time = CURRENT_TIMESTAMP
+                    WHERE order_id = %s
+                """, (order_status, order_id))
+            else:
+                cursor.execute("""
+                    UPDATE Delivery SET delivery_status = %s, delivery_time = NULL
+                    WHERE order_id = %s
+                """, (order_status, order_id))
+        else:
+            if order_status in ('delivered', 'canceled'):
+                cursor.execute("""
+                    INSERT INTO Delivery (order_id, delivery_status, driver_id, delivery_time)
+                    VALUES (%s, %s, %s, CURRENT_TIMESTAMP)
+                """, (order_id, order_status, session['bongu_id']))
+            else:
+                cursor.execute("""
+                    INSERT INTO Delivery (order_id, delivery_status, driver_id, delivery_time)
+                    VALUES (%s, %s, %s, NULL)
+                """, (order_id, order_status, session['bongu_id']))
 
         conn.commit()
         return jsonify({"message": "Delivery status updated successfully"}), 200
