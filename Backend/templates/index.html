@@ -31,8 +31,8 @@
             <h1>McBongu's</h1>
             <p class="tagline">Fresh Food. Fast Service.</p>
             <div class="search-container">
-                <input type="text" placeholder="Search for food or restaurants...">
-                <button class="search-btn">
+                <input type="text" placeholder="Search for food or restaurants..." id="searchInput">
+                <button class="search-btn" id="searchBtn">
                     <img src="/static/images/glass.png" alt="glass" style="height: 30px; width: 30px;">
                 </button>
             </div>
@@ -168,5 +168,17 @@
             </div>
         </div>
     </footer>
+
+    <script>
+        document.getElementById('searchBtn').addEventListener('click', () => {
+            window.location.href = '/user-login';
+        });
+    
+        document.getElementById('searchInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                window.location.href = '/user-login';
+            }
+        });
+    </script>
 </body>
 </html>

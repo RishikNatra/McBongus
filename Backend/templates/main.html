@@ -30,8 +30,14 @@
         <div class="hero-content">
             <h1>Browse Restaurants</h1>
             <p class="tagline">Discover the best eats in Dharwad!</p>
+            <div class="search-container">
+                <input type="text" placeholder="Search for restaurants..." id="searchInput">
+                <button class="search-btn" id="searchBtn">
+                    <img src="/static/images/glass.png" alt="glass" style="height: 30px; width: 30px;">
+                </button>
+            </div>
         </div>
-        <div class="restaurant-grid">
+        <div class="restaurant-grid" id="restaurantGrid">
             <div class="restaurant-card" data-restaurant-id="1" data-restaurant-name="The S Jail Hotel" data-rating="3.7">
                 <div class="restaurant-image" style="background-image: url('https://images.unsplash.com/photo-1701579231305-d84d8af9a3fd?q=80&w=1974&auto=format&fit=crop');"></div>
                 <div class="restaurant-info">
@@ -82,6 +88,7 @@
             </div>
         </div>
     </div>
+    
 
     <!-- Menu Modal -->
     <div class="menu-modal" id="menuModal">
@@ -133,25 +140,26 @@
     </footer>
 
     <script>
+        // Existing menu modal script
         document.querySelectorAll('.view-menu').forEach(button => {
             button.addEventListener('click', async (e) => {
                 const card = e.target.closest('.restaurant-card');
                 const restaurantId = card.dataset.restaurantId;
                 const restaurantName = card.dataset.restaurantName;
                 const rating = card.dataset.rating;
-
+    
                 const modal = document.getElementById('menuModal');
                 document.getElementById('restaurantName').textContent = restaurantName;
                 document.getElementById('restaurantRating').textContent = `Rating: ${rating} ★`;
                 modal.style.display = 'block';
-
+    
                 const response = await fetch(`/menu/${restaurantId}`);
                 const menuItems = await response.json();
-
+    
                 const menuContainer = document.getElementById('menuItems');
                 menuContainer.innerHTML = '';
                 let total = 0;
-
+    
                 menuItems.forEach(item => {
                     const div = document.createElement('div');
                     div.className = 'menu-item';
@@ -161,7 +169,7 @@
                     `;
                     menuContainer.appendChild(div);
                 });
-
+    
                 window.updateTotal = () => {
                     total = 0;
                     document.querySelectorAll('#menuItems input[type="number"]').forEach(input => {
@@ -171,7 +179,7 @@
                     });
                     document.getElementById('totalPrice').textContent = `Total: ₹${total.toFixed(2)}`;
                 };
-
+    
                 document.getElementById('proceedToPayment').onclick = () => {
                     if (total > 0) {
                         document.getElementById('paymentGateway').style.display = 'block';
@@ -179,7 +187,7 @@
                         alert('Please select at least one item to proceed.');
                     }
                 };
-
+    
                 document.getElementById('payNowButton').onclick = async () => {
                     const selectedItems = [];
                     document.querySelectorAll('#menuItems input[type="number"]').forEach(input => {
@@ -191,7 +199,7 @@
                             });
                         }
                     });
-
+    
                     const orderData = {
                         restaurant_id: restaurantId,
                         items: selectedItems,
@@ -204,7 +212,7 @@
                         body: JSON.stringify(orderData)
                     });
                     const result = await response.json();
-
+    
                     if (response.ok) {
                         alert('Payment Successful! Order placed.');
                         window.location.href = `/order_tracking/${result.order_id}`;
@@ -214,6 +222,32 @@
                     modal.style.display = 'none';
                 };
             });
+        });
+    
+        // New search functionality
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const restaurantGrid = document.getElementById('restaurantGrid');
+    
+        function filterRestaurants() {
+            const query = searchInput.value.toLowerCase();
+            const restaurants = restaurantGrid.querySelectorAll('.restaurant-card');
+    
+            restaurants.forEach(card => {
+                const name = card.dataset.restaurantName.toLowerCase();
+                if (name.includes(query)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+    
+        searchBtn.addEventListener('click', filterRestaurants);
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                filterRestaurants();
+            }
         });
     </script>
 </body>

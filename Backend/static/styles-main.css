@@ -539,3 +539,35 @@ body {
         margin-top: 15px;
     }
 }
+
+.search-container {
+    display: flex;
+    max-width: 600px;
+    margin: 0 auto;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+    border-radius: 50px;
+    overflow: hidden;
+}
+
+.search-container input {
+    flex-grow: 1;
+    padding: 15px 25px;
+    border: none;
+    font-family: 'Poppins', sans-serif;
+    font-size: 16px;
+    outline: none;
+}
+
+.search-btn {
+    background-color: #D1495B;
+    color: white;
+    border: none;
+    padding: 0 25px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-size: 18px;
+}
+
+.search-btn:hover {
+    background-color: #bc3a4b;
+}
