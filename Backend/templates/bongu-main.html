@@ -1,9 +1,12 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bongu Dashboard - McBongu's</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles-main.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles-dashboard.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Bacasime+Antique&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
     <div class="top-bar">
@@ -12,35 +15,71 @@
             <a href="/bongu/orders" class="active">Orders</a>
             <a href="/logout">Logout</a>
         </div>
+        <button class="top-button">
+            <img src="{{ url_for('static', filename='images/bar.png') }}" alt="Menu">
+        </button>
     </div>
+    <div class="below-bar"></div>
+
     <div class="container">
-        <h1>Available Orders</h1>
-        <div class="order-list">
-            {% if orders %}
-                {% for order in orders %}
-                <div class="order-card">
-                    <h3>Order #{{ order.id }}</h3>
-                    <p>Restaurant: {{ order.restaurant_name }}</p>
-                    <p>Customer: {{ order.customer_name }}</p>
-                    <p>Total: ₹{{ order.total_price }}</p>
-                    <p>Status: {{ order.status }}</p>
-                    <button onclick="acceptOrder({{ order.id }})">Accept Order</button>
-                    <form onsubmit="updateStatus(event, {{ order.id }})">
-                        <select name="status">
-                            <option value="preparing">Order is being prepared</option>
-                            <option value="out_for_delivery">Collected order / On its way</option>
-                            <option value="delivered">Order delivered</option>
-                            <option value="failed">Delivery failed</option>
-                        </select>
-                        <button type="submit">Update Status</button>
-                    </form>
-                </div>
-                {% endfor %}
-            {% else %}
-                <p>No available orders to display.</p>
-            {% endif %}
+        <div class="hero-content">
+            <h1>Bongu Dashboard</h1>
+            <p class="tagline">Manage your deliveries with ease!</p>
         </div>
+
+        <!-- Available Orders -->
+        <section class="dashboard-section">
+            <h2>Available Orders</h2>
+            <div class="order-list">
+                {% if available_orders %}
+                    {% for order in available_orders %}
+                    <div class="order-card">
+                        <h3>Order #{{ order.id }}</h3>
+                        <p><strong>Restaurant:</strong> {{ order.restaurant_name }}</p>
+                        <p><strong>Customer:</strong> {{ order.customer_name }}</p>
+                        <p><strong>Address:</strong> {{ order.full_address }}</p>
+                        <p><strong>Payment:</strong> ₹{{ order.bongu_payment }}</p>
+                        <p><strong>Status:</strong> {{ order.status }}</p>
+                        <button class="action-btn" onclick="acceptOrder({{ order.id }})">Accept Order</button>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="no-data">No available orders to display.</p>
+                {% endif %}
+            </div>
+        </section>
+
+        <!-- Accepted Orders -->
+        <section class="dashboard-section">
+            <h2>Your Accepted Orders</h2>
+            <div class="order-list">
+                {% if accepted_orders %}
+                    {% for order in accepted_orders %}
+                    <div class="order-card">
+                        <h3>Order #{{ order.id }}</h3>
+                        <p><strong>Restaurant:</strong> {{ order.restaurant_name }}</p>
+                        <p><strong>Customer:</strong> {{ order.customer_name }}</p>
+                        <p><strong>Address:</strong> {{ order.full_address }}</p>
+                        <p><strong>Payment:</strong> ₹{{ order.bongu_payment }}</p>
+                        <p><strong>Status:</strong> {{ order.status }}</p>
+                        <form class="status-form" onsubmit="updateStatus(event, {{ order.id }})">
+                            <select name="status">
+                                <option value="preparing">Order is being prepared</option>
+                                <option value="out_for_delivery">Order is on its way</option>
+                                <option value="delivered">Order delivered</option>
+                                <option value="failed">Delivery failed</option>
+                            </select>
+                            <button type="submit" class="action-btn">Update Status</button>
+                        </form>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="no-data">No accepted orders to display.</p>
+                {% endif %}
+            </div>
+        </section>
     </div>
+
     <script>
         async function acceptOrder(orderId) {
             const response = await fetch(`/bongu/accept_order/${orderId}`, {
@@ -48,24 +87,23 @@
                 headers: { 'Content-Type': 'application/json' }
             });
             const result = await response.json();
-            alert(result.message);
+            alert(result.message || result.error);
             location.reload();
         }
-    async function updateStatus(event, orderId) {
-        event.preventDefault();
-        const form = event.target;
-        const status = form.querySelector('select').value;
-        const response = await fetch(`/bongu/update_delivery/${orderId}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: `status=${status}`
-        });
-        const result = await response.json();
-        alert(result.message);
-        location.reload();
-    }
-</script>
 
+        async function updateStatus(event, orderId) {
+            event.preventDefault();
+            const form = event.target;
+            const status = form.querySelector('select').value;
+            const response = await fetch(`/bongu/update_delivery/${orderId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `status=${status}`
+            });
+            const result = await response.json();
+            alert(result.message || result.error);
+            location.reload();
+        }
+    </script>
 </body>
 </html>
-

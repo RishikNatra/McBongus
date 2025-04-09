@@ -23,9 +23,13 @@
             <img src="{{ url_for('static', filename='images/bar.png') }}" alt="Menu">
         </button>
     </div>
+    <div class="below-bar"></div>
 
     <div class="container">
-        <h1>Bongu Login</h1>
+        <div class="hero-content">
+            <h1>Bongu Login</h1>
+            <p class="tagline">Join the delivery crew!</p>
+        </div>
         <div class="login-container">
             <form id="loginForm" method="POST" action="{{ url_for('bongu_auth.bongu_login') }}">
                 <div class="input-group">
@@ -58,7 +62,7 @@
             </form>
         </div>
     </div>
-    
+
     <script>
         document.querySelector('.password-toggle').addEventListener('click', function() {
             const passwordInput = document.querySelector('input[name="password"]');

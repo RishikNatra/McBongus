@@ -23,9 +23,13 @@
             <img src="{{ url_for('static', filename='images/bar.png') }}" alt="Menu">
         </button>
     </div>
+    <div class="below-bar"></div>
 
     <div class="container">
-        <h1>Restaurant Login</h1>
+        <div class="hero-content">
+            <h1>Restaurant Login</h1>
+            <p class="tagline">Manage your restaurant with ease!</p>
+        </div>
         <div class="login-container">
             <form id="restaurantLoginForm" method="POST" action="{{ url_for('restaurant_auth.restaurant_login') }}">
                 <div class="input-group">
@@ -53,12 +57,12 @@
                         <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
                         <a href="#" class="social-icon"><i class="fab fa-apple"></i></a>
                     </div>
-                    <p><a href="{{ url_for('restaurant_auth.restaurant_register') }}">Request to Register</a></p>
+                    <p><a href="{{ url_for('restaurant_auth.restaurant_register') }}" class="register-link">Request to Register</a></p>
                 </div>
             </form>
         </div>
     </div>
-    
+
     <script>
         document.querySelector('.password-toggle').addEventListener('click', function() {
             const passwordInput = document.querySelector('input[name="password"]');

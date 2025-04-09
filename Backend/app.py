@@ -151,11 +151,12 @@ def order_status(order_id):
 
     # Fetch the order details
     cursor.execute("""
-        SELECT o.id, o.total_price, o.status, o.order_date, r.name AS restaurant_name,
-               d.delivery_status, d.delivery_time
+        SELECT o.id, o.total_price, o.status, o.order_date, o.bongu_id, r.name AS restaurant_name,
+               d.delivery_status, d.delivery_time, b.username as bongu_name
         FROM Orders o
         JOIN Restaurants r ON o.restaurant_id = r.id
         LEFT JOIN Delivery d ON o.id = d.order_id
+        LEFT JOIN Bongus b ON o.bongu_id = b.id 
         WHERE o.id = %s
     """, (order_id,))
     order = cursor.fetchone()
@@ -181,7 +182,8 @@ def order_status(order_id):
         'total_price': float(order['total_price']),  # Convert Decimal to float for JSON
         'status': status_messages.get(order['status'], 'Unknown status'),
         'delivery_status': order['delivery_status'] if order['delivery_status'] else 'Not assigned',
-        'delivery_time': order['delivery_time'].isoformat() if order['delivery_time'] else 'Pending'
+        'delivery_time': order['delivery_time'].isoformat() if order['delivery_time'] else 'Pending',
+        'bongu_name': order['bongu_name'] if order['bongu_name'] else 'Not yet assigned'
     }
 
     cursor.close()
@@ -191,7 +193,113 @@ def order_status(order_id):
 
 @app.route('/order_tracking/<int:order_id>')
 def order_tracking(order_id):
-    return render_template('order_tracking.html')
+    conn = db()
+    cursor = conn.cursor(dictionary=True)
+
+    # Fetch order details including restaurant name and delivery info
+    cursor.execute("""
+        SELECT o.id, o.total_price, o.status, o.order_date, o.bongu_id,
+               r.name AS restaurant_name,
+               d.delivery_status, d.delivery_time
+        FROM Orders o
+        JOIN Restaurants r ON o.restaurant_id = r.id
+        LEFT JOIN Delivery d ON o.id = d.order_id
+        WHERE o.id = %s
+    """, (order_id,))
+    order = cursor.fetchone()
+
+    if not order:
+        cursor.close()
+        conn.close()
+        return "Order not found", 404
+
+    # Fetch Bongu name if bongu_id exists
+    bongu_name = None
+    if order['bongu_id']:
+        cursor.execute("SELECT username FROM Bongus WHERE id = %s", (order['bongu_id'],))
+        bongu = cursor.fetchone()
+        bongu_name = bongu['username'] if bongu else None
+
+    cursor.close()
+    conn.close()
+
+    # Render the template with order details and bongu_name
+    return render_template('order_tracking.html', 
+                          order=order, 
+                          bongu_name=bongu_name)
+
+@app.route('/get_address', methods=['GET'])
+def get_address():
+    if 'user_id' not in session:
+        return jsonify({"error": "User not logged in"}), 401
+
+    conn = db()
+    cursor = conn.cursor(dictionary=True)
+    try:
+        cursor.execute("SELECT * FROM Address WHERE user_id = %s", (session['user_id'],))
+        address = cursor.fetchone()
+        if address:
+            return jsonify(address)
+        else:
+            return jsonify({"message": "No address found"}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+# Route to update or insert the user's address
+@app.route('/update_address', methods=['POST'])
+def update_address():
+    if 'user_id' not in session:
+        return jsonify({"error": "User not logged in"}), 401
+
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "No data provided"}), 400
+
+    apartment_no = data.get('apartment_no')
+    apartment_name = data.get('apartment_name')
+    landmark = data.get('landmark')
+    road_no = data.get('road_no')
+    locality = data.get('locality')
+    city = data.get('city')
+    state = data.get('state')
+
+    if not all([apartment_no, apartment_name, road_no, locality, city, state]):
+        return jsonify({"error": "Missing required fields"}), 400
+
+    conn = db()
+    cursor = conn.cursor()
+    try:
+        # Check if address exists for the user
+        cursor.execute("SELECT id FROM Address WHERE user_id = %s", (session['user_id'],))
+        existing_address = cursor.fetchone()
+
+        if existing_address:
+            # Update existing address
+            cursor.execute("""
+                UPDATE Address 
+                SET apartment_no = %s, apartment_name = %s, landmark = %s, road_no = %s, 
+                    locality = %s, city = %s, state = %s 
+                WHERE user_id = %s
+            """, (apartment_no, apartment_name, landmark, road_no, locality, city, state, session['user_id']))
+        else:
+            # Insert new address
+            cursor.execute("""
+                INSERT INTO Address (user_id, apartment_no, apartment_name, landmark, road_no, locality, city, state)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            """, (session['user_id'], apartment_no, apartment_name, landmark, road_no, locality, city, state))
+
+        conn.commit()
+        return jsonify({"message": "Address updated successfully"}), 200
+    except Exception as e:
+        conn.rollback()
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
 
 if __name__ == '__main__':
     app.run(debug=True)

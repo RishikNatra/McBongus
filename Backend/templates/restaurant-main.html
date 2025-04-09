@@ -4,57 +4,71 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Restaurant Dashboard - McBongu's</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles-home.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles-dashboard.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Bacasime+Antique&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
     <div class="top-bar">
-        <div class="mc">
-            McBongu's
-        </div>
-        <div class="menu-icon"></div>
+        <div class="mc"><a href="/">McBongu's</a></div>
         <button class="top-button">
             <img src="{{ url_for('static', filename='images/bar.png') }}" alt="Menu">
         </button>
     </div>
+    <div class="below-bar"></div>
 
     <div class="dashboard-container">
-        <!-- Restaurant Details -->
-        <div class="restaurant-details">
-            <h2>Restaurant Dashboard</h2>
-            <p><strong>Name:</strong> {{ restaurant.name }}</p>
-            <p><strong>Location:</strong> {{ restaurant.location }}</p>
-            <p><strong>Username:</strong> {{ restaurant.username }}</p>
-            <p><strong>Rating:</strong> {{ restaurant.rating }}</p>
-            <p><a href="{{ url_for('restaurant_auth.restaurant_logout') }}">Logout</a></p>
+        <div class="hero-content">
+            <h1>Restaurant Dashboard</h1>
+            <p class="tagline">Manage your orders seamlessly!</p>
         </div>
 
+        <!-- Restaurant Details -->
+        <section class="dashboard-section restaurant-details">
+            <h2>{{ restaurant.name }}</h2>
+            <div class="details-grid">
+                <p><strong>Location:</strong> {{ restaurant.location }}</p>
+                <p><strong>Username:</strong> {{ restaurant.username }}</p>
+                <p><strong>Rating:</strong> {{ restaurant.rating }} ★</p>
+                <a href="{{ url_for('restaurant_auth.restaurant_logout') }}" class="action-btn logout-btn">Logout</a>
+            </div>
+        </section>
+
         <!-- Pending Orders -->
-        <div class="orders-section">
-            <h3>Pending Orders</h3>
-            {% if orders %}
-                {% for order in orders %}
-                    <div class="order">
-                        <p><strong>Order ID:</strong> {{ order[0] }}</p>
+        <section class="dashboard-section orders-section">
+            <h2>Pending Orders</h2>
+            <div class="order-list">
+                {% if orders %}
+                    {% for order in orders %}
+                    <div class="order-card">
+                        <h3>Order #{{ order[0] }}</h3>
                         <p><strong>User ID:</strong> {{ order[1] }}</p>
                         <p><strong>Total Price:</strong> ₹{{ order[2] }}</p>
                         <p><strong>Order Date:</strong> {{ order[3] }}</p>
                         <p><strong>Status:</strong> {{ order[4] }}</p>
+                        <p><strong>Items:</strong></p>
+                        <ul class="order-items">
+                            {% for item in order_details[order[0]] %}
+                                <li>{{ item[1] }} - Qty: {{ item[0] }} - ₹{{ item[2] }}</li>
+                            {% endfor %}
+                        </ul>
                         <div class="order-actions">
                             <form method="POST" action="{{ url_for('restaurant_auth.order_action', order_id=order[0]) }}">
                                 <input type="hidden" name="action" value="accept">
-                                <button type="submit" class="accept-btn">Accept</button>
+                                <button type="submit" class="action-btn accept-btn">Accept</button>
                             </form>
                             <form method="POST" action="{{ url_for('restaurant_auth.order_action', order_id=order[0]) }}">
                                 <input type="hidden" name="action" value="reject">
-                                <button type="submit" class="reject-btn">Reject</button>
+                                <button type="submit" class="action-btn reject-btn">Reject</button>
                             </form>
                         </div>
                     </div>
-                {% endfor %}
-            {% else %}
-                <p>No pending orders at the moment.</p>
-            {% endif %}
-        </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="no-data">No pending orders at the moment.</p>
+                {% endif %}
+            </div>
+        </section>
     </div>
 </body>
 </html>

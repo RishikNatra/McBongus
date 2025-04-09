@@ -4,93 +4,115 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Order Tracking - McBongu's</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles-main.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles-dashboard.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Bacasime+Antique&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
     <div class="top-bar">
         <div class="mc"><a href="/">McBongu's</a></div>
+        <button class="top-button">
+            <img src="{{ url_for('static', filename='images/bar.png') }}" alt="Menu">
+        </button>
     </div>
+    <div class="below-bar"></div>
+
     <div class="container">
-        <h1>Order Tracking</h1>
-        <div id="order-details">
-            <p>Order ID: <span id="orderId"></span></p>
-            <p>Restaurant: <span id="restaurantName"></span></p>
-            <p>Total: ₹<span id="totalPrice"></span></p>
-            <p>Order Status: <span id="orderStatus"></span></p>
-            <p>Delivery Status: <span id="deliveryStatus"></span></p>
-            <p>Estimated Delivery: <span id="deliveryTime"></span></p>
+        <div class="hero-content">
+            <h1>Order Tracking</h1>
+            <p class="tagline">Follow your food every step of the way!</p>
         </div>
+
+        <div class="order-details">
+            <p><strong>Order ID:</strong> <span id="orderId"></span></p>
+            <p><strong>Restaurant:</strong> <span id="restaurantName"></span></p>
+            <p><strong>Total:</strong> ₹<span id="totalPrice"></span></p>
+            <p><strong>Status:</strong> <span id="orderStatus"></span></p>
+            <p><strong>Bongu:</strong> <span id="bonguName"></span></p>
+            <p><strong>Estimated Delivery:</strong> <span id="deliveryTime"></span></p>
+            <button class="action-btn" id="editAddressBtn">Edit Address</button>
+        </div>
+
         <div class="status-timeline">
             <div class="timeline-step" id="step-pending">Order Placed</div>
             <div class="timeline-step" id="step-preparing">Preparing</div>
             <div class="timeline-step" id="step-out_for_delivery">On Its Way</div>
             <div class="timeline-step" id="step-delivered">Delivered</div>
         </div>
-        <div class="map-placeholder" style="width: 100%; height: 300px; text-align: center;">
-            <img src="{{ url_for('static', filename='images/map-placeholder.png') }}" alt="Map"> 
+
+        <div class="map-placeholder">
+            <img src="{{ url_for('static', filename='images/map-placeholder.png') }}" alt="Map">
         </div>
     </div>
+
+    <!-- Address Edit Modal -->
+    <div id="addressModal" class="modal">
+        <div class="modal-content">
+            <span class="close">×</span>
+            <h2>Edit Address</h2>
+            <form id="addressForm">
+                <input type="text" id="apartment_no" placeholder="Apartment No" required>
+                <input type="text" id="apartment_name" placeholder="Apartment Name" required>
+                <input type="text" id="landmark" placeholder="Landmark">
+                <input type="text" id="road_no" placeholder="Road No" required>
+                <input type="text" id="locality" placeholder="Locality" required>
+                <input type="text" id="city" placeholder="City" required>
+                <input type="text" id="state" placeholder="State" required>
+                <button type="submit" class="action-btn">Save</button>
+                <button type="button" id="cancelBtn" class="action-btn cancel-btn">Cancel</button>
+            </form>
+        </div>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const orderId = window.location.pathname.split('/').pop();
-            console.log('Order ID:', orderId);
+            const modal = document.getElementById('addressModal');
+            const editBtn = document.getElementById('editAddressBtn');
+            const closeBtn = document.querySelector('.close');
+            const cancelBtn = document.getElementById('cancelBtn');
+            const addressForm = document.getElementById('addressForm');
 
-            // Map order status to user-friendly messages
             const statusMessages = {
                 'pending': 'Order is pending restaurant approval',
-                'restaurant_accepted': 'Order accepted by restaurant, awaiting Bongu approval',
+                'restaurant_accepted': 'Order accepted by restaurant, awaiting Bongu assignment',
                 'canceled_awaiting_refund': 'Order canceled by restaurant, expecting refund',
-                'bongu_accepted': 'Order accepted by Bongu, in delivery',
+                'bongu_accepted': 'Order accepted by Bongu, awaiting preparation',
+                'preparing': 'Order is being prepared',
+                'out_for_delivery': 'Order is on its way',
                 'delivered': 'Order delivered',
                 'canceled': 'Order canceled (refund processed)'
             };
 
-            // Map order status to timeline steps
             const statusToStep = {
                 'pending': 'pending',
-                'restaurant_accepted': 'pending',  // Still waiting for Bongu
-                'canceled_awaiting_refund': 'pending',  // Canceled, no further steps
-                'bongu_accepted': 'preparing',  // Preparing or out for delivery
-                'delivered': 'delivered',
-                'canceled': 'pending'  // Canceled, no further steps
-            };
-
-            // Map delivery status to timeline steps (if applicable)
-            const deliveryStatusToStep = {
+                'restaurant_accepted': 'pending',
+                'canceled_awaiting_refund': 'pending',
+                'bongu_accepted': 'preparing',
                 'preparing': 'preparing',
                 'out_for_delivery': 'out_for_delivery',
                 'delivered': 'delivered',
-                'failed': 'pending'  // Failed delivery, no further steps
+                'canceled': 'pending'
             };
 
             async function updateStatus() {
                 try {
                     const response = await fetch(`/order_status/${orderId}`);
-                    console.log('Fetch Response:', response);
                     const order = await response.json();
-                    console.log('Order Data:', order);
                     if (response.ok) {
                         document.getElementById('orderId').textContent = order.id;
                         document.getElementById('restaurantName').textContent = order.restaurant_name;
                         document.getElementById('totalPrice').textContent = order.total_price;
                         document.getElementById('orderStatus').textContent = statusMessages[order.status] || order.status;
-                        document.getElementById('deliveryStatus').textContent = order.delivery_status;
-                        document.getElementById('deliveryTime').textContent = order.delivery_time;
+                        document.getElementById('bonguName').textContent = order.bongu_name || 'Not assigned';
+                        document.getElementById('deliveryTime').textContent = order.delivery_time || 'Not yet estimated';
 
-                        // Update timeline based on order status and delivery status
                         const steps = ['pending', 'preparing', 'out_for_delivery', 'delivered'];
-                        let activeStep = statusToStep[order.status] || 'pending';
-                        if (order.status === 'bongu_accepted' && order.delivery_status) {
-                            activeStep = deliveryStatusToStep[order.delivery_status] || activeStep;
-                        }
+                        const activeStep = statusToStep[order.status] || 'pending';
 
                         steps.forEach(step => {
                             const element = document.getElementById(`step-${step}`);
-                            if (step === activeStep) {
-                                element.classList.add('active');
-                            } else {
-                                element.classList.remove('active');
-                            }
+                            element.classList.toggle('active', step === activeStep);
                         });
                     } else {
                         console.error('Fetch failed:', order.error);
@@ -99,8 +121,71 @@
                     console.error('Error fetching order status:', error);
                 }
             }
+
+            async function loadAddress() {
+                try {
+                    const response = await fetch('/get_address');
+                    const data = await response.json();
+                    if (response.ok && data.id) {
+                        document.getElementById('apartment_no').value = data.apartment_no || '';
+                        document.getElementById('apartment_name').value = data.apartment_name || '';
+                        document.getElementById('landmark').value = data.landmark || '';
+                        document.getElementById('road_no').value = data.road_no || '';
+                        document.getElementById('locality').value = data.locality || '';
+                        document.getElementById('city').value = data.city || '';
+                        document.getElementById('state').value = data.state || '';
+                    }
+                } catch (error) {
+                    console.error('Error loading address:', error);
+                }
+            }
+
+            editBtn.addEventListener('click', () => {
+                modal.style.display = 'flex';
+                loadAddress();
+            });
+
+            closeBtn.addEventListener('click', () => {
+                modal.style.display = 'none';
+            });
+
+            cancelBtn.addEventListener('click', () => {
+                modal.style.display = 'none';
+            });
+
+            addressForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const addressData = {
+                    apartment_no: document.getElementById('apartment_no').value,
+                    apartment_name: document.getElementById('apartment_name').value,
+                    landmark: document.getElementById('landmark').value,
+                    road_no: document.getElementById('road_no').value,
+                    locality: document.getElementById('locality').value,
+                    city: document.getElementById('city').value,
+                    state: document.getElementById('state').value
+                };
+
+                try {
+                    const response = await fetch('/update_address', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(addressData)
+                    });
+                    const result = await response.json();
+                    if (response.ok) {
+                        alert('Address updated successfully!');
+                        modal.style.display = 'none';
+                    } else {
+                        alert('Error: ' + result.error);
+                    }
+                } catch (error) {
+                    console.error('Error updating address:', error);
+                    alert('An error occurred while updating the address.');
+                }
+            });
+
             updateStatus();
-            setInterval(updateStatus, 5000); // Refresh every 5 seconds
+            setInterval(updateStatus, 5000);
         });
     </script>
 </body>

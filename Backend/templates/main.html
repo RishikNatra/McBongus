@@ -14,7 +14,7 @@
             <a href="/">McBongu's</a>
         </div>
         <div class="nav-links">
-            <<a href="/" class="active">Home</a>
+            <a href="/" class="active">Home</a>
             <a href="/restaurants">Restaurants</a>
             <a href="/restaurants">Offers</a>
             <a href="/about">About Us</a>
@@ -24,49 +24,60 @@
         </button>
     </div>
     
+    <div class="below-bar"></div>
+
     <div class="container">
-        <h1>Browse Restaurants</h1>
+        <div class="hero-content">
+            <h1>Browse Restaurants</h1>
+            <p class="tagline">Discover the best eats in Dharwad!</p>
+        </div>
         <div class="restaurant-grid">
-            <!-- Example Restaurant Card -->
             <div class="restaurant-card" data-restaurant-id="1" data-restaurant-name="The S Jail Hotel" data-rating="3.7">
-                <div class="card-inner">
-                    <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=500&q=60" alt="S Jail">
-                    <div class="card-content">
-                        <h3>The S Jail Hotel</h3>
-                        <p>Get arrested with food</p>
-                        <div class="card-footer">
-                            <span class="rating">3.7 ★</span>
-                            <button class="view-menu">View Menu</button>
-                        </div>
+                <div class="restaurant-image" style="background-image: url('https://images.unsplash.com/photo-1701579231305-d84d8af9a3fd?q=80&w=1974&auto=format&fit=crop');"></div>
+                <div class="restaurant-info">
+                    <h3>The S Jail Hotel</h3>
+                    <p>Get arrested with food</p>
+                    <div class="rating">
+                        <span>3.7 ★</span>
                     </div>
-                </div>  
-            </div>
-            <!-- Add other restaurant cards similarly with data attributes -->
-            <div class="restaurant-card" data-restaurant-id="2" data-restaurant-name="KFC" data-rating="4.0">
-                <div class="card-inner">
-                    <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=500&q=60" alt="S Jail">
-                    <div class="card-content">
-                        <h3>KFC</h3>
-                        <p>It's finger lickin' good!</p>
-                        <div class="card-footer">
-                            <span class="rating">4.0 ★</span>
-                            <button class="view-menu">View Menu</button>
-                        </div>
-                    </div>
+                    <span class="delivery-time"><i class="fas fa-clock"></i> 25-35 min</span>
+                    <button class="view-menu">View Menu</button>
                 </div>
             </div>
-            
-            <div class="restaurant-card" data-restaurant-id="3" data-restaurant-name="Disha Darshini" data-rating="4.6">
-                <div class="card-inner">
-                    <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=500&q=60" alt="S Jail">
-                    <div class="card-content">
-                        <h3>Disha Darshini</h3>
-                        <p>Quality breakfast!</p>
-                        <div class="card-footer">
-                            <span class="rating">4.6 ★</span>
-                            <button class="view-menu">View Menu</button>
-                        </div>
+            <div class="restaurant-card" data-restaurant-id="2" data-restaurant-name="KFC" data-rating="4.0">
+                <div class="restaurant-image" style="background-image: url('https://images.unsplash.com/photo-1550547660-d9450f859349?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');"></div>
+                <div class="restaurant-info">
+                    <h3>KFC</h3>
+                    <p>It's finger lickin' good!</p>
+                    <div class="rating">
+                        <span>4.0 ★</span>
                     </div>
+                    <span class="delivery-time"><i class="fas fa-clock"></i> 30-45 min</span>
+                    <button class="view-menu">View Menu</button>
+                </div>
+            </div>
+            <div class="restaurant-card" data-restaurant-id="3" data-restaurant-name="Disha Darshini" data-rating="4.6">
+                <div class="restaurant-image" style="background-image: url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');"></div>
+                <div class="restaurant-info">
+                    <h3>Disha Darshini</h3>
+                    <p>Quality breakfast!</p>
+                    <div class="rating">
+                        <span>4.6 ★</span>
+                    </div>
+                    <span class="delivery-time"><i class="fas fa-clock"></i> 20-30 min</span>
+                    <button class="view-menu">View Menu</button>
+                </div>
+            </div>
+            <div class="restaurant-card" data-restaurant-id="4" data-restaurant-name="Pizza Hut" data-rating="4.6">
+                <div class="restaurant-image" style="background-image: url('https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');"></div>
+                <div class="restaurant-info">
+                    <h3>Pizza Hut</h3>
+                    <p>Quality pizza!</p>
+                    <div class="rating">
+                        <span>4.6 ★</span>
+                    </div>
+                    <span class="delivery-time"><i class="fas fa-clock"></i> 40-55 min</span>
+                    <button class="view-menu">View Menu</button>
                 </div>
             </div>
         </div>
@@ -83,36 +94,36 @@
             <div class="payment-gateway" id="paymentGateway">
                 <h3>Payment Gateway</h3>
                 <p>Simulated Payment Screen (Integration with real gateway like Razorpay/Stripe would go here)</p>
-                <button onclick="alert('Payment Successful!'); document.getElementById('menuModal').style.display='none';">Pay Now</button>
+                <button id="payNowButton">Pay Now</button>
             </div>
-            <button onclick="document.getElementById('menuModal').style.display='none'">Close</button>
+            <button class="close-modal" onclick="document.getElementById('menuModal').style.display='none'">Close</button>
         </div>
     </div>
 
     <footer class="footer">
         <div class="footer-content">
             <div class="footer-section">
-                <h4>About Us</h4>
-                <p>McBongu's helps you discover the best restaurants in Dharwad with user reviews and ratings.</p>
+                <h4>McBongu's</h4>
+                <p>The best food delivery service in town. Fast, fresh, and friendly.</p>
             </div>
             <div class="footer-section">
                 <h4>Quick Links</h4>
                 <ul>
-                    <li><a href="/">Home</a></li>
-                    <li><a href="#">Restaurants</a></li>
-                    <li><a href="#">Offers</a></li>
+                    <li><a href="/about">About Us</a></li>
                     <li><a href="/about">Contact</a></li>
+                    <li><a href="/about">FAQ</a></li>
+                    <li><a href="/about">Terms of Service</a></li>
                 </ul>
             </div>
             <div class="footer-section">
-                <h4>Contact</h4>
-                <p><i class="fas fa-phone"></i> +91 1234567890</p>
+                <h4>Contact Us</h4>
+                <p><i class="fas fa-map-marker-alt"></i> 123 Delivery St, Food City</p>
+                <p><i class="fas fa-phone"></i> (555) 123-4567</p>
                 <p><i class="fas fa-envelope"></i> rishik.natra.work@gmail.com</p>
-                <p><i class="fas fa-map-marker-alt"></i> Dharwad, Karnataka</p>
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2025 McBongu's. All rights reserved.</p>
+            <p>© 2025 McBongu's - All Rights Reserved</p>
             <div class="social-icons">
                 <a href="#"><i class="fab fa-facebook-f"></i></a>
                 <a href="#"><i class="fab fa-twitter"></i></a>
@@ -121,7 +132,6 @@
         </div>
     </footer>
 
-    <!-- Inside the <script> tag in main.html -->
     <script>
         document.querySelectorAll('.view-menu').forEach(button => {
             button.addEventListener('click', async (e) => {
@@ -147,15 +157,17 @@
                     div.className = 'menu-item';
                     div.innerHTML = `
                         <span>${item.item_name} - ₹${item.price}</span>
-                        <input type="checkbox" data-price="${item.price}" data-id="${item.id}" onchange="updateTotal()">
+                        <input type="number" min="0" value="0" data-price="${item.price}" data-id="${item.id}" oninput="updateTotal()">
                     `;
                     menuContainer.appendChild(div);
                 });
 
                 window.updateTotal = () => {
                     total = 0;
-                    document.querySelectorAll('#menuItems input:checked').forEach(checkbox => {
-                        total += parseFloat(checkbox.dataset.price);
+                    document.querySelectorAll('#menuItems input[type="number"]').forEach(input => {
+                        const quantity = parseInt(input.value) || 0;
+                        const price = parseFloat(input.dataset.price);
+                        total += quantity * price;
                     });
                     document.getElementById('totalPrice').textContent = `Total: ₹${total.toFixed(2)}`;
                 };
@@ -168,13 +180,16 @@
                     }
                 };
 
-                document.querySelector('#paymentGateway button').onclick = async () => {
+                document.getElementById('payNowButton').onclick = async () => {
                     const selectedItems = [];
-                    document.querySelectorAll('#menuItems input:checked').forEach(checkbox => {
-                        selectedItems.push({
-                            menu_id: checkbox.dataset.id,
-                            quantity: 1  // You can add a quantity input if needed
-                        });
+                    document.querySelectorAll('#menuItems input[type="number"]').forEach(input => {
+                        const quantity = parseInt(input.value) || 0;
+                        if (quantity > 0) {
+                            selectedItems.push({
+                                menu_id: input.dataset.id,
+                                quantity: quantity
+                            });
+                        }
                     });
 
                     const orderData = {
@@ -197,8 +212,6 @@
                         alert('Order placement failed: ' + result.error);
                     }
                     modal.style.display = 'none';
-
-                    
                 };
             });
         });

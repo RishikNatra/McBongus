@@ -12,10 +12,9 @@ def db():
         host="localhost",
         user="root",
         password="Rishik@1429145",
-        database="mcbongus_db"  # Updated to match your database name
+        database="McBongus_DB"
     )
 
-# Restaurant Login (unchanged)
 @restaurant_auth.route('/restaurant-login', methods=['GET', 'POST'])
 def restaurant_login():
     if request.method == 'POST':
@@ -27,40 +26,30 @@ def restaurant_login():
             conn = db()
             cursor = conn.cursor()
 
-            # Check if the username exists in the Restaurants table
             cursor.execute("SELECT id FROM Restaurants WHERE username = %s", (username,))
             restaurant = cursor.fetchone()
 
             if not restaurant:
                 cursor.close()
                 conn.close()
-                return "Restaurant not found. <a href='/restaurant-login'>Try again</a>"
+                return "Restaurant not found. <a href='/restaurant/restaurant-login'>Try again</a>"
 
-            # Check if the same username exists in RestaurantRequests and verify the password
             cursor.execute("SELECT password_hash FROM RestaurantRequests WHERE username = %s", (username,))
             request_user = cursor.fetchone()
 
-            if request_user:
-                stored_hash = request_user[0]
-                if bcrypt.check_password_hash(stored_hash, password):
-                    # Login successful
-                    session['restaurant_id'] = restaurant[0]
-                    session['restaurant_name'] = username
-                    cursor.close()
-                    conn.close()
-                    return redirect(url_for('restaurant_auth.restaurant_dashboard'))
-                else:
-                    cursor.close()
-                    conn.close()
-                    return "Invalid password. <a href='/restaurant-login'>Try again</a>"
+            if request_user and bcrypt.check_password_hash(request_user[0], password):
+                session['restaurant_id'] = restaurant[0]
+                session['restaurant_name'] = username
+                cursor.close()
+                conn.close()
+                return redirect(url_for('restaurant_auth.restaurant_dashboard'))
             else:
                 cursor.close()
                 conn.close()
-                return "No registration request found for this username. <a href='/restaurant-login'>Try again</a>"
+                return "Invalid credentials. <a href='/restaurant/restaurant-login'>Try again</a>"
 
     return render_template("restaurant-login.html")
 
-# Restaurant Dashboard
 @restaurant_auth.route('/restaurant-dashboard')
 def restaurant_dashboard():
     if 'restaurant_id' not in session:
@@ -76,7 +65,7 @@ def restaurant_dashboard():
     if not restaurant:
         cursor.close()
         conn.close()
-        return "Restaurant not found. <a href='/restaurant-logout'>Logout</a>"
+        return "Restaurant not found. <a href='/restaurant/restaurant-logout'>Logout</a>"
 
     restaurant_details = {
         'name': restaurant[0],
@@ -85,7 +74,7 @@ def restaurant_dashboard():
         'rating': restaurant[3]
     }
 
-    # Fetch pending orders for this restaurant
+    # Fetch pending orders
     cursor.execute("""
         SELECT id, user_id, total_price, order_date, status
         FROM Orders
@@ -93,12 +82,24 @@ def restaurant_dashboard():
     """, (session['restaurant_id'],))
     pending_orders = cursor.fetchall()
 
+    # Fetch order items for each pending order
+    order_details = {}
+    for order in pending_orders:
+        order_id = order[0]
+        cursor.execute("""
+            SELECT oi.quantity, m.item_name, m.price
+            FROM Order_Items oi
+            JOIN Menu m ON oi.menu_id = m.id
+            WHERE oi.order_id = %s
+        """, (order_id,))
+        items = cursor.fetchall()
+        order_details[order_id] = items  # Store items as (quantity, item_name, price) tuples
+
     cursor.close()
     conn.close()
 
-    return render_template("restaurant-main.html", restaurant=restaurant_details, orders=pending_orders)
+    return render_template("restaurant-main.html", restaurant=restaurant_details, orders=pending_orders, order_details=order_details)
 
-# Handle Order Actions (Accept/Reject)
 @restaurant_auth.route('/restaurant/order-action/<int:order_id>', methods=['POST'])
 def order_action(order_id):
     if 'restaurant_id' not in session:
@@ -109,16 +110,14 @@ def order_action(order_id):
     conn = db()
     cursor = conn.cursor()
 
-    # Verify the order belongs to this restaurant and is pending
     cursor.execute("SELECT status FROM Orders WHERE id = %s AND restaurant_id = %s", (order_id, session['restaurant_id']))
     order = cursor.fetchone()
 
     if not order or order[0] != 'pending':
         cursor.close()
         conn.close()
-        return "Order not found or already processed. <a href='/restaurant-dashboard'>Back to Dashboard</a>"
+        return "Order not found or already processed. <a href='/restaurant/restaurant-dashboard'>Back to Dashboard</a>"
 
-    # Update the order status based on the action
     if action == 'accept':
         new_status = 'restaurant_accepted'
     elif action == 'reject':
@@ -126,7 +125,7 @@ def order_action(order_id):
     else:
         cursor.close()
         conn.close()
-        return "Invalid action. <a href='/restaurant-dashboard'>Back to Dashboard</a>"
+        return "Invalid action. <a href='/restaurant/restaurant-dashboard'>Back to Dashboard</a>"
 
     cursor.execute("UPDATE Orders SET status = %s WHERE id = %s", (new_status, order_id))
     conn.commit()
@@ -136,7 +135,6 @@ def order_action(order_id):
 
     return redirect(url_for('restaurant_auth.restaurant_dashboard'))
 
-# Other routes (unchanged)
 @restaurant_auth.route('/restaurant-register', methods=['GET', 'POST'])
 def restaurant_register():
     if request.method == 'POST':
@@ -164,14 +162,14 @@ def restaurant_register():
                 cursor.close()
                 conn.close()
                 if "contact" in str(e):
-                    return "Contact already exists in a pending request. <a href='/restaurant-register'>Try again</a>"
+                    return "Contact already exists in a pending request. <a href='/restaurant/restaurant-register'>Try again</a>"
                 elif "username" in str(e):
-                    return "Username already exists in a pending request. <a href='/restaurant-register'>Try again</a>"
-                return f"Error: {str(e)}. <a href='/restaurant-register'>Try again</a>"
+                    return "Username already exists in a pending request. <a href='/restaurant/restaurant-register'>Try again</a>"
+                return f"Error: {str(e)}. <a href='/restaurant/restaurant-register'>Try again</a>"
             except Exception as e:
                 cursor.close()
                 conn.close()
-                return f"Error: {str(e)}. <a href='/restaurant-register'>Try again</a>"
+                return f"Error: {str(e)}. <a href='/restaurant/restaurant-register'>Try again</a>"
 
     return render_template("restaurant-register.html")
 
