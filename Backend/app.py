@@ -218,6 +218,44 @@ def order_tracking(order_id):
                           order=order, 
                           bongu_name=bongu_name)
 
+@app.route('/cancel_order/<int:order_id>', methods=['POST'])
+def cancel_order(order_id):
+    if 'user_id' not in session:
+        return jsonify({"error": "User not logged in"}), 401
+
+    conn = db()
+    cursor = conn.cursor()
+    try:
+        # Verify the order belongs to the user and is cancellable
+        cursor.execute("SELECT user_id, status FROM Orders WHERE id = %s", (order_id,))
+        order = cursor.fetchone()
+        if not order:
+            return jsonify({"error": "Order not found"}), 404
+        if order[0] != session['user_id']:
+            return jsonify({"error": "You can only cancel your own orders"}), 403
+        
+        cancellable_statuses = ['pending', 'restaurant_accepted', 'bongu_accepted']
+        if order[1] not in cancellable_statuses:
+            return jsonify({"error": "Order cannot be canceled at this stage"}), 403
+
+        # Update order status to 'canceled'
+        cursor.execute("UPDATE Orders SET status = 'canceled' WHERE id = %s", (order_id,))
+        
+        # Update Delivery table if it exists
+        cursor.execute("SELECT id FROM Delivery WHERE order_id = %s", (order_id,))
+        delivery = cursor.fetchone()
+        if delivery:
+            cursor.execute("UPDATE Delivery SET delivery_status = 'canceled' WHERE order_id = %s", (order_id,))
+
+        conn.commit()
+        return jsonify({"message": "Order canceled successfully"}), 200
+    except Exception as e:
+        conn.rollback()
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+    
 @app.route('/get_address', methods=['GET'])
 def get_address():
     if 'user_id' not in session:

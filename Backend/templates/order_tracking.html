@@ -24,13 +24,14 @@
         </div>
 
         <div class="order-details">
-            <p><strong>Order ID:</strong> <span id="orderId"></span></p>
+            <p><strong>DotFiddle</strong> <span id="orderId"></span></p>
             <p><strong>Restaurant:</strong> <span id="restaurantName"></span></p>
             <p><strong>Total:</strong> ₹<span id="totalPrice"></span></p>
             <p><strong>Status:</strong> <span id="orderStatus"></span></p>
             <p><strong>Bongu:</strong> <span id="bonguName"></span></p>
             <p><strong>Estimated Delivery:</strong> <span id="deliveryTime"></span></p>
             <button class="action-btn" id="editAddressBtn">Edit Address</button>
+            <button class="action-btn" id="cancelOrderBtn" style="background-color: #ff4444;">Cancel Order</button>
         </div>
 
         <div class="status-timeline">
@@ -69,6 +70,7 @@
             const orderId = window.location.pathname.split('/').pop();
             const modal = document.getElementById('addressModal');
             const editBtn = document.getElementById('editAddressBtn');
+            const cancelOrderBtn = document.getElementById('cancelOrderBtn');
             const closeBtn = document.querySelector('.close');
             const cancelBtn = document.getElementById('cancelBtn');
             const addressForm = document.getElementById('addressForm');
@@ -114,11 +116,36 @@
                             const element = document.getElementById(`step-${step}`);
                             element.classList.toggle('active', step === activeStep);
                         });
+
+                        // Enable/disable cancel button based on cancellable statuses
+                        const cancellableStatuses = ['pending', 'restaurant_accepted', 'bongu_accepted'];
+                        cancelOrderBtn.disabled = !cancellableStatuses.includes(order.status);
                     } else {
                         console.error('Fetch failed:', order.error);
                     }
                 } catch (error) {
                     console.error('Error fetching order status:', error);
+                }
+            }
+
+            async function cancelOrder() {
+                if (confirm('Are you sure you want to cancel this order?')) {
+                    try {
+                        const response = await fetch(`/cancel_order/${orderId}`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' }
+                        });
+                        const result = await response.json();
+                        if (response.ok) {
+                            alert('Order canceled successfully!');
+                            updateStatus(); // Refresh the status display
+                        } else {
+                            alert('Error: ' + result.error);
+                        }
+                    } catch (error) {
+                        console.error('Error canceling order:', error);
+                        alert('An error occurred while canceling the order.');
+                    }
                 }
             }
 
@@ -144,6 +171,8 @@
                 modal.style.display = 'flex';
                 loadAddress();
             });
+
+            cancelOrderBtn.addEventListener('click', cancelOrder);
 
             closeBtn.addEventListener('click', () => {
                 modal.style.display = 'none';
