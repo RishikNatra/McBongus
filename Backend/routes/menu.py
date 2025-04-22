@@ -1,14 +1,10 @@
 from flask import Blueprint, jsonify
 import mysql.connector
+from db import get_db_connection
 
 menu_bp = Blueprint('menu_bp', __name__)
 
 # Database connection
-db = mysql.connector.connect(
-    host="localhost",
-    user="root",
-    password="Rishik@1429145",
-    database="McBongus_DB"
-)
+db = get_db_connection()
 
 

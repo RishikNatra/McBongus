@@ -1,12 +1,6 @@
 import mysql.connector
+from config import DB_CONFIG
 
-DB_CONFIG = {
-    "host": "localhost",
-    "user": "root",
-    "password": "Rishik@1429145",
-    "database": "mcbongus_db",
-    "port": 3306
-}
+def get_db_connection():
+    return mysql.connector.connect(**DB_CONFIG)
 
-db = mysql.connector.connect(**DB_CONFIG)
-cursor = db.cursor()

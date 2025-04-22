@@ -2,6 +2,7 @@ from flask import Flask, jsonify, render_template, session, redirect, url_for, r
 from flask_bcrypt import Bcrypt
 from flask_session import Session
 import mysql.connector
+from db import get_db_connection  # Import centralized DB connection function
 from routes.restaurant import restaurant_auth
 from routes.menu import menu_bp
 from routes.bongu import bongu_auth 
@@ -16,15 +17,6 @@ app.secret_key = 'your_secret_key'
 # Flask-Session configuration
 app.config['SESSION_TYPE'] = 'filesystem'
 Session(app)
-
-# Database connection
-def db():
-    return mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="Rishik@1429145",
-        database="McBongus_DB"
-    )
 
 # Register blueprints
 app.register_blueprint(auth, url_prefix='/auth')
@@ -59,28 +51,30 @@ def restaurant_login():
 @app.route('/restaurant/<int:restaurant_id>')
 def restaurant(restaurant_id):
     # Get restaurant details and menu items
-    conn = db()
+    conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT item_name, price FROM MENU WHERE restaurant_id = %s AND availability = 1", (restaurant_id,))
-    menu_items = cursor.fetchall()
-    cursor.execute("SELECT name, rating FROM RESTAURANT WHERE id = %s", (restaurant_id,))
-    restaurant_details = cursor.fetchone()
-    conn.close()
+    try:
+        cursor.execute("SELECT item_name, price FROM Menu WHERE restaurant_id = %s AND availability = 1", (restaurant_id,))
+        menu_items = cursor.fetchall()
+        cursor.execute("SELECT name, rating FROM Restaurants WHERE id = %s", (restaurant_id,))
+        restaurant_details = cursor.fetchone()
 
-    if restaurant_details:
-        return render_template('restaurant_page.html', restaurant_id=restaurant_id, 
-                               restaurant_name=restaurant_details[0], rating=restaurant_details[1],
-                               menu_items=menu_items)
-    else:
-        return "Restaurant not found", 404
+        if restaurant_details:
+            return render_template('restaurant_page.html', restaurant_id=restaurant_id, 
+                                   restaurant_name=restaurant_details[0], rating=restaurant_details[1],
+                                   menu_items=menu_items)
+        else:
+            return "Restaurant not found", 404
+    finally:
+        cursor.close()
+        conn.close()
 
 @app.route('/menu/<int:restaurant_id>')
 def get_menu(restaurant_id):
-    conn = db()
+    conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
-    
     try:
-        cursor.execute("SELECT id, item_name, price, availability FROM MENU WHERE restaurant_id = %s", (restaurant_id,))
+        cursor.execute("SELECT id, item_name, price, availability FROM Menu WHERE restaurant_id = %s", (restaurant_id,))
         menu_items = cursor.fetchall()
         
         if not menu_items:
@@ -109,121 +103,117 @@ def place_order():
         if not all([restaurant_id, items, total_price]):
             return jsonify({"error": "Missing required fields"}), 400
 
-        conn = db()
+        conn = get_db_connection()
         cursor = conn.cursor()
-
-        # Insert into Orders table
-        cursor.execute("""
-            INSERT INTO Orders (user_id, restaurant_id, total_price, status)
-            VALUES (%s, %s, %s, 'pending')
-        """, (session['user_id'], restaurant_id, total_price))
-        order_id = cursor.lastrowid
-
-        # Insert into Order_Items table
-        for item in items:
+        try:
+            # Insert into Orders table
             cursor.execute("""
-                INSERT INTO Order_Items (order_id, menu_id, quantity, price)
-                VALUES (%s, %s, %s, (SELECT price FROM Menu WHERE id = %s))
-            """, (order_id, item['menu_id'], item['quantity'], item['menu_id']))
+                INSERT INTO Orders (user_id, restaurant_id, total_price, status)
+                VALUES (%s, %s, %s, 'pending')
+            """, (session['user_id'], restaurant_id, total_price))
+            order_id = cursor.lastrowid
 
-        # Simulate payment
-        cursor.execute("""
-            INSERT INTO Payments (order_id, payment_status, transaction_id)
-            VALUES (%s, 'completed', %s)
-        """, (order_id, f"TXN{order_id}"))
+            # Insert into Order_Items table
+            for item in items:
+                cursor.execute("""
+                    INSERT INTO Order_Items (order_id, menu_id, quantity, price)
+                    VALUES (%s, %s, %s, (SELECT price FROM Menu WHERE id = %s))
+                """, (order_id, item['menu_id'], item['quantity'], item['menu_id']))
 
-        conn.commit()  # Ensure the transaction is committed
-        print(f"Order {order_id} committed to database")
-        cursor.close()
-        conn.close()
-        return jsonify({"message": "Order placed successfully", "order_id": order_id}), 200
-    except Exception as e:
-        if 'conn' in locals():
+            # Simulate payment
+            cursor.execute("""
+                INSERT INTO Payments (order_id, payment_status, transaction_id)
+                VALUES (%s, 'completed', %s)
+            """, (order_id, f"TXN{order_id}"))
+
+            conn.commit()  # Ensure the transaction is committed
+            print(f"Order {order_id} committed to database")
+            return jsonify({"message": "Order placed successfully", "order_id": order_id}), 200
+        except Exception as e:
             conn.rollback()
+            raise
+        finally:
             cursor.close()
             conn.close()
+    except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 @app.route('/order_status/<int:order_id>')
 def order_status(order_id):
-    conn = db()
+    conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
+    try:
+        # Fetch the order details
+        cursor.execute("""
+            SELECT o.id, o.total_price, o.status, o.order_date, o.bongu_id, r.name AS restaurant_name,
+                   d.delivery_status, d.delivery_time, b.username as bongu_name
+            FROM Orders o
+            JOIN Restaurants r ON o.restaurant_id = r.id
+            LEFT JOIN Delivery d ON o.id = d.order_id
+            LEFT JOIN Bongus b ON o.bongu_id = b.id 
+            WHERE o.id = %s
+        """, (order_id,))
+        order = cursor.fetchone()
 
-    # Fetch the order details
-    cursor.execute("""
-        SELECT o.id, o.total_price, o.status, o.order_date, o.bongu_id, r.name AS restaurant_name,
-               d.delivery_status, d.delivery_time, b.username as bongu_name
-        FROM Orders o
-        JOIN Restaurants r ON o.restaurant_id = r.id
-        LEFT JOIN Delivery d ON o.id = d.order_id
-        LEFT JOIN Bongus b ON o.bongu_id = b.id 
-        WHERE o.id = %s
-    """, (order_id,))
-    order = cursor.fetchone()
+        if not order:
+            return jsonify({"error": "Order not found"}), 404
 
-    if not order:
+        order_details = {
+            'id': order['id'],
+            'restaurant_name': order['restaurant_name'],
+            'total_price': float(order['total_price']),  # Convert Decimal to float for JSON
+            'status': order['status'],  # Return raw status from Orders table
+            'delivery_status': order['delivery_status'] if order['delivery_status'] else 'Not assigned',
+            'delivery_time': order['delivery_time'].isoformat() if order['delivery_time'] else 'Pending',
+            'bongu_name': order['bongu_name'] if order['bongu_name'] else 'Not yet assigned'
+        }
+
+        return jsonify(order_details)
+    finally:
         cursor.close()
         conn.close()
-        return jsonify({"error": "Order not found"}), 404
-
-    order_details = {
-        'id': order['id'],
-        'restaurant_name': order['restaurant_name'],
-        'total_price': float(order['total_price']),  # Convert Decimal to float for JSON
-        'status': order['status'],  # Return raw status from Orders table
-        'delivery_status': order['delivery_status'] if order['delivery_status'] else 'Not assigned',
-        'delivery_time': order['delivery_time'].isoformat() if order['delivery_time'] else 'Pending',
-        'bongu_name': order['bongu_name'] if order['bongu_name'] else 'Not yet assigned'
-    }
-
-    cursor.close()
-    conn.close()
-
-    return jsonify(order_details)
 
 @app.route('/order_tracking/<int:order_id>')
 def order_tracking(order_id):
-    conn = db()
+    conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
+    try:
+        # Fetch order details including restaurant name and delivery info
+        cursor.execute("""
+            SELECT o.id, o.total_price, o.status, o.order_date, o.bongu_id,
+                   r.name AS restaurant_name,
+                   d.delivery_status, d.delivery_time
+            FROM Orders o
+            JOIN Restaurants r ON o.restaurant_id = r.id
+            LEFT JOIN Delivery d ON o.id = d.order_id
+            WHERE o.id = %s
+        """, (order_id,))
+        order = cursor.fetchone()
 
-    # Fetch order details including restaurant name and delivery info
-    cursor.execute("""
-        SELECT o.id, o.total_price, o.status, o.order_date, o.bongu_id,
-               r.name AS restaurant_name,
-               d.delivery_status, d.delivery_time
-        FROM Orders o
-        JOIN Restaurants r ON o.restaurant_id = r.id
-        LEFT JOIN Delivery d ON o.id = d.order_id
-        WHERE o.id = %s
-    """, (order_id,))
-    order = cursor.fetchone()
+        if not order:
+            return "Order not found", 404
 
-    if not order:
+        # Fetch Bongu name if bongu_id exists
+        bongu_name = None
+        if order['bongu_id']:
+            cursor.execute("SELECT username FROM Bongus WHERE id = %s", (order['bongu_id'],))
+            bongu = cursor.fetchone()
+            bongu_name = bongu['username'] if bongu else None
+
+        # Render the template with order details and bongu_name
+        return render_template('order_tracking.html', 
+                              order=order, 
+                              bongu_name=bongu_name)
+    finally:
         cursor.close()
         conn.close()
-        return "Order not found", 404
-
-    # Fetch Bongu name if bongu_id exists
-    bongu_name = None
-    if order['bongu_id']:
-        cursor.execute("SELECT username FROM Bongus WHERE id = %s", (order['bongu_id'],))
-        bongu = cursor.fetchone()
-        bongu_name = bongu['username'] if bongu else None
-
-    cursor.close()
-    conn.close()
-
-    # Render the template with order details and bongu_name
-    return render_template('order_tracking.html', 
-                          order=order, 
-                          bongu_name=bongu_name)
 
 @app.route('/cancel_order/<int:order_id>', methods=['POST'])
 def cancel_order(order_id):
     if 'user_id' not in session:
         return jsonify({"error": "User not logged in"}), 401
 
-    conn = db()
+    conn = get_db_connection()
     cursor = conn.cursor()
     try:
         # Verify the order belongs to the user and is cancellable
@@ -261,7 +251,7 @@ def get_address():
     if 'user_id' not in session:
         return jsonify({"error": "User not logged in"}), 401
 
-    conn = db()
+    conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
     try:
         cursor.execute("SELECT * FROM Address WHERE user_id = %s", (session['user_id'],))
@@ -276,7 +266,6 @@ def get_address():
         cursor.close()
         conn.close()
 
-# Route to update or insert the user's address
 @app.route('/update_address', methods=['POST'])
 def update_address():
     if 'user_id' not in session:
@@ -297,7 +286,7 @@ def update_address():
     if not all([apartment_no, apartment_name, road_no, locality, city, state]):
         return jsonify({"error": "Missing required fields"}), 400
 
-    conn = db()
+    conn = get_db_connection()
     cursor = conn.cursor()
     try:
         # Check if address exists for the user
@@ -327,7 +316,6 @@ def update_address():
     finally:
         cursor.close()
         conn.close()
-
 
 if __name__ == '__main__':
     app.run(debug=True)

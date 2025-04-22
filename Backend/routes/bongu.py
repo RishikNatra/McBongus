@@ -1,18 +1,9 @@
-# routes/bongu.py
 from flask import Blueprint, request, redirect, url_for, session, render_template, jsonify
 from flask_bcrypt import Bcrypt
 import mysql.connector
+from db import get_db_connection  # Import centralized DB connection function
 
 bongu_auth = Blueprint('bongu_auth', __name__)
-
-def db():
-    return mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="Rishik@1429145",
-        database="McBongus_DB"
-    )
-
 bcrypt = Bcrypt()
 
 @bongu_auth.route('/login', methods=['GET', 'POST'])
@@ -22,42 +13,40 @@ def bongu_login():
         password = request.form['password']
         action = request.form['action']
 
-        if action == "register":
-            hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
-            try:
-                conn = db()
-                cursor = conn.cursor()
-                cursor.execute("INSERT INTO Bongus (username, password_hash) VALUES (%s, %s)", (username, hashed_password))
-                conn.commit()
-                cursor.close()
-                conn.close()
-                return "Bongu registered successfully! <a href='/bongu/login'>Login</a>"
-            except mysql.connector.IntegrityError:
-                return "Username already exists. <a href='/bongu/login'>Try again</a>"
+        # Create a new database connection
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        try:
+            if action == "register":
+                hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+                try:
+                    cursor.execute("INSERT INTO Bongus (username, password_hash) VALUES (%s, %s)", (username, hashed_password))
+                    conn.commit()
+                    return "Bongu registered successfully! <a href='/bongu/login'>Login</a>"
+                except mysql.connector.IntegrityError:
+                    return "Username already exists. <a href='/bongu/login'>Try again</a>"
 
-        elif action == "login":
-            conn = db()
-            cursor = conn.cursor()
-            cursor.execute("SELECT id, password_hash FROM Bongus WHERE username = %s", (username,))
-            user = cursor.fetchone()
-            if user and bcrypt.check_password_hash(user[1], password):
-                session['bongu_id'] = user[0]
-                session['bongu_username'] = username
-                print(f"Logged in: {session}")
-                cursor.close()
-                conn.close()
-                return redirect(url_for('bongu_auth.bongu_orders'))
-            else:
-                cursor.close()
-                conn.close()
-                return "Invalid credentials. <a href='/bongu/login'>Try again</a>"
+            elif action == "login":
+                cursor.execute("SELECT id, password_hash FROM Bongus WHERE username = %s", (username,))
+                user = cursor.fetchone()
+                if user and bcrypt.check_password_hash(user[1], password):
+                    session['bongu_id'] = user[0]
+                    session['bongu_username'] = username
+                    print(f"Logged in: {session}")
+                    return redirect(url_for('bongu_auth.bongu_orders'))
+                else:
+                    return "Invalid credentials. <a href='/bongu/login'>Try again</a>"
+
+        finally:
+            cursor.close()
+            conn.close()  # Ensure connection is closed
 
     return render_template("bongu-login.html")
 
 @bongu_auth.route('/bongu-dashboard')
 def bongu_dashboard():
     if 'bongu_id' in session:
-        return render_template('bongu-main.html', username=session['bongu_username'])
+        return render_template('bongu-main.html', username=session.get('bongu_username'))
     return redirect(url_for('bongu_auth.bongu_login'))
 
 @bongu_auth.route('/orders')
@@ -65,12 +54,12 @@ def bongu_orders():
     if 'bongu_id' not in session:
         print("Redirecting to bongu_login: No bongu_id in session")
         return redirect(url_for('bongu_auth.bongu_login'))
-    
+
     print(f"Fetching orders for bongu_id: {session['bongu_id']}")
+    # Create a new database connection
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
     try:
-        conn = db()
-        cursor = conn.cursor(dictionary=True)
-        
         # Fetch available orders (restaurant_accepted, not yet accepted by any Bongu)
         cursor.execute("""
             SELECT o.id, o.status, o.total_price, o.order_date, r.name AS restaurant_name,
@@ -81,6 +70,7 @@ def bongu_orders():
             JOIN Users u ON o.user_id = u.id
             LEFT JOIN Address a ON o.user_id = a.user_id
             WHERE o.status = 'restaurant_accepted' AND o.bongu_id IS NULL
+
         """)
         available_orders = cursor.fetchall()
 
@@ -112,19 +102,21 @@ def bongu_orders():
 
         print(f"Available orders: {available_orders}")
         print(f"Accepted orders: {accepted_orders}")
-        cursor.close()
-        conn.close()
         return render_template('bongu-main.html', available_orders=available_orders, accepted_orders=accepted_orders, bongu_id=session['bongu_id'])
     except Exception as e:
         print(f"Database error: {str(e)}")
         return jsonify({"error": f"Database error: {str(e)}"}), 500
+    finally:
+        cursor.close()
+        conn.close()  # Ensure connection is closed
 
 @bongu_auth.route('/accept_order/<int:order_id>', methods=['POST'])
 def accept_order(order_id):
     if 'bongu_id' not in session:
         return jsonify({"error": "Not logged in"}), 401
 
-    conn = db()
+    # Create a new database connection
+    conn = get_db_connection()
     cursor = conn.cursor()
     try:
         cursor.execute("SELECT status, bongu_id FROM Orders WHERE id = %s", (order_id,))
@@ -144,7 +136,7 @@ def accept_order(order_id):
         return jsonify({"error": str(e)}), 500
     finally:
         cursor.close()
-        conn.close()
+        conn.close()  # Ensure connection is closed
 
 @bongu_auth.route('/update_delivery/<int:order_id>', methods=['POST'])
 def update_delivery(order_id):
@@ -156,7 +148,8 @@ def update_delivery(order_id):
     if status not in valid_statuses:
         return jsonify({"error": "Invalid status"}), 400
 
-    conn = db()
+    # Create a new database connection
+    conn = get_db_connection()
     cursor = conn.cursor()
     try:
         # Verify the order is assigned to this Bongu and in a valid state
@@ -210,4 +203,4 @@ def update_delivery(order_id):
         return jsonify({"error": str(e)}), 500
     finally:
         cursor.close()
-        conn.close()
+        conn.close()  # Ensure connection is closed

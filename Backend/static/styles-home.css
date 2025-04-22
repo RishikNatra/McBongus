@@ -187,10 +187,14 @@ body {
     gap: 10px;
     cursor: pointer;
     transition: transform 0.3s;
+    text-decoration: none; /* Remove underline from links */
+    color: inherit; /* Inherit text color */
 }
 
 .category-item:hover {
     transform: translateY(-5px);
+    opacity: 0.8;
+    cursor: pointer;
 }
 
 .category-icon {
@@ -341,11 +345,19 @@ body {
     overflow: hidden;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    text-decoration: none; /* Remove underline from links */
+    color: inherit; /* Inherit text color */
+    display: block; /* Ensure the link takes up the full card area */
 }
 
 .restaurant-card:hover {
     transform: translateY(-10px);
     box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+    /* Add hover effects if desired */
+    opacity: 0.9;
+    cursor: pointer;
+    /* Example: Add a subtle shadow or border */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .restaurant-image {
