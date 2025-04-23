@@ -84,8 +84,8 @@ Create the `McBongus_DB` database and tables by running the provided SQL command
    Enter your MySQL password when prompted.
 
 2. Run the following SQL commands to create the database, tables, and insert initial data:
-
-   CREATE DATABASE McBongus_DB;
+```
+  CREATE DATABASE McBongus_DB;
    USE McBongus_DB;
 
    -- Users Table
@@ -275,7 +275,7 @@ Create the `McBongus_DB` database and tables by running the provided SQL command
    (40, 12, 'Veg Pulao', 129.00, 1),
    (41, 12, 'Roti Basket', 69.00, 1),
    (42, 12, 'Fish Fry', 199.00, 0);
-
+```
 3. Alternatively, if you have the `sql.sql` file in your project:
    - Import it into MySQL:
      Run: `mysql -u your_mysql_username -p McBongus_DB < sql.sql`
@@ -309,7 +309,7 @@ The `McBongus_DB` database consists of the following tables:
 - Delivery: Tracks delivery status and driver assignments.
 
 The SQL commands above create these tables with appropriate constraints and insert initial data for testing.
-
+```
 Directory Structure
 McBongus/
 ├── Backend/
@@ -337,7 +337,7 @@ McBongus/
 │   ├── venv/               # Virtual environment
 ├── .gitignore              # Git ignore file
 ├── README.md               # This file
-
+```
 # Troubleshooting
 - MySQL Connection Error:
   - Ensure MySQL is running and credentials in `config.py` are correct.
