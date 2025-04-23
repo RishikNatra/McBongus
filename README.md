@@ -7,10 +7,10 @@ McBongus is a web-based food delivery platform built with Flask and MySQL, allow
 - Project Overview
 - Prerequisites
 - Setup Instructions
-  - 1. Clone the Repository
-  - 2. Set Up the Virtual Environment
-  - 3. Configure the Database
-  - 4. Run the Application
+  -  Clone the Repository
+  -  Set Up the Virtual Environment
+  -  Configure the Database
+  -  Run the Application
 - Database Schema
 - Directory Structure
 - Troubleshooting
