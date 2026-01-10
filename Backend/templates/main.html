@@ -345,12 +345,11 @@
             });
         }
 
+        // Live search update
+        searchInput.addEventListener('input', filterRestaurants);
+
+        // Fallback for button click
         searchBtn.addEventListener('click', filterRestaurants);
-        searchInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                filterRestaurants();
-            }
-        });
     </script>
 </body>
 
