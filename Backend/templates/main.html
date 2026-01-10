@@ -1,13 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>McBongu's - Dharwad Restaurant Guide</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles-main.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Bacasime+Antique&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Bacasime+Antique&family=Poppins:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
+
 <body>
     <div class="top-bar">
         <div class="mc">
@@ -23,7 +27,7 @@
             <img src="{{ url_for('static', filename='images/bar.png') }}" alt="Menu">
         </button>
     </div>
-    
+
     <div class="below-bar"></div>
 
     <div class="container">
@@ -38,8 +42,11 @@
             </div>
         </div>
         <div class="restaurant-grid" id="restaurantGrid">
-            <div class="restaurant-card" data-restaurant-id="1" data-restaurant-name="The S Jail Hotel" data-rating="3.9">
-                <div class="restaurant-image" style="background-image: url('https://images.unsplash.com/photo-1701579231305-d84d8af9a3fd?q=80&w=1974&auto=format&fit=crop');"></div>
+            <div class="restaurant-card" data-restaurant-id="1" data-restaurant-name="The S Jail Hotel"
+                data-rating="3.9">
+                <div class="restaurant-image"
+                    style="background-image: url('https://images.unsplash.com/photo-1701579231305-d84d8af9a3fd?q=80&w=1974&auto=format&fit=crop');">
+                </div>
                 <div class="restaurant-info">
                     <h3>The S Jail Hotel</h3>
                     <p>Get arrested with food</p>
@@ -51,7 +58,9 @@
                 </div>
             </div>
             <div class="restaurant-card" data-restaurant-id="2" data-restaurant-name="KFC" data-rating="4.0">
-                <div class="restaurant-image" style="background-image: url('https://images.unsplash.com/photo-1550547660-d9450f859349?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');"></div>
+                <div class="restaurant-image"
+                    style="background-image: url('https://images.unsplash.com/photo-1550547660-d9450f859349?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');">
+                </div>
                 <div class="restaurant-info">
                     <h3>KFC</h3>
                     <p>It's finger lickin' good!</p>
@@ -63,7 +72,9 @@
                 </div>
             </div>
             <div class="restaurant-card" data-restaurant-id="3" data-restaurant-name="Disha Darshini" data-rating="4.3">
-                <div class="restaurant-image" style="background-image: url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');"></div>
+                <div class="restaurant-image"
+                    style="background-image: url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');">
+                </div>
                 <div class="restaurant-info">
                     <h3>Disha Darshini</h3>
                     <p>Quality breakfast!</p>
@@ -75,7 +86,9 @@
                 </div>
             </div>
             <div class="restaurant-card" data-restaurant-id="4" data-restaurant-name="Pizza Hut" data-rating="4.5">
-                <div class="restaurant-image" style="background-image: url('https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');"></div>
+                <div class="restaurant-image"
+                    style="background-image: url('https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');">
+                </div>
                 <div class="restaurant-info">
                     <h3>Pizza Hut</h3>
                     <p>Quality pizza!</p>
@@ -86,8 +99,11 @@
                     <button class="view-menu">View Menu</button>
                 </div>
             </div>
-            <div class="restaurant-card" data-restaurant-id="7" data-restaurant-name="Sri Krishna Bhavan" data-rating="4.1">
-                <div class="restaurant-image" style="background-image: url('https://images.unsplash.com/photo-1668236543090-82eba5ee5976?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');"></div>
+            <div class="restaurant-card" data-restaurant-id="7" data-restaurant-name="Sri Krishna Bhavan"
+                data-rating="4.1">
+                <div class="restaurant-image"
+                    style="background-image: url('https://images.unsplash.com/photo-1668236543090-82eba5ee5976?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');">
+                </div>
                 <div class="restaurant-info">
                     <h3>Sri Krishna Bhavan</h3>
                     <p>Authentic South Indian delights</p>
@@ -98,8 +114,11 @@
                     <button class="view-menu">View Menu</button>
                 </div>
             </div>
-            <div class="restaurant-card" data-restaurant-id="8" data-restaurant-name="Empire Restaurant" data-rating="4.2">
-                <div class="restaurant-image" style="background-image: url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?q=80&w=1974&auto=format&fit=crop');"></div>
+            <div class="restaurant-card" data-restaurant-id="8" data-restaurant-name="Empire Restaurant"
+                data-rating="4.2">
+                <div class="restaurant-image"
+                    style="background-image: url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?q=80&w=1974&auto=format&fit=crop');">
+                </div>
                 <div class="restaurant-info">
                     <h3>Empire Restaurant</h3>
                     <p>Taste the royal flavors</p>
@@ -111,7 +130,9 @@
                 </div>
             </div>
             <div class="restaurant-card" data-restaurant-id="9" data-restaurant-name="Green Park" data-rating="3.8">
-                <div class="restaurant-image" style="background-image: url('https://images.unsplash.com/flagged/photo-1557753478-b9fb74f39eb5?q=80&w=1972&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');"></div>
+                <div class="restaurant-image"
+                    style="background-image: url('https://images.unsplash.com/flagged/photo-1557753478-b9fb74f39eb5?q=80&w=1972&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');">
+                </div>
                 <div class="restaurant-info">
                     <h3>Green Park</h3>
                     <p>Fresh and green dining</p>
@@ -122,8 +143,11 @@
                     <button class="view-menu">View Menu</button>
                 </div>
             </div>
-            <div class="restaurant-card" data-restaurant-id="10" data-restaurant-name="Domino's Pizza" data-rating="4.4">
-                <div class="restaurant-image" style="background-image: url('https://images.unsplash.com/photo-1615719413546-198b25453f85?q=80&w=1936&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');"></div>
+            <div class="restaurant-card" data-restaurant-id="10" data-restaurant-name="Domino's Pizza"
+                data-rating="4.4">
+                <div class="restaurant-image"
+                    style="background-image: url('https://images.unsplash.com/photo-1615719413546-198b25453f85?q=80&w=1936&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');">
+                </div>
                 <div class="restaurant-info">
                     <h3>Domino's Pizza</h3>
                     <p>Hot pizza, delivered fast</p>
@@ -134,8 +158,11 @@
                     <button class="view-menu">View Menu</button>
                 </div>
             </div>
-            <div class="restaurant-card" data-restaurant-id="11" data-restaurant-name="Rasoi Veg Thali" data-rating="4.0">
-                <div class="restaurant-image" style="background-image: url('https://images.unsplash.com/photo-1680993032090-1ef7ea9b51e5?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');"></div>
+            <div class="restaurant-card" data-restaurant-id="11" data-restaurant-name="Rasoi Veg Thali"
+                data-rating="4.0">
+                <div class="restaurant-image"
+                    style="background-image: url('https://images.unsplash.com/photo-1680993032090-1ef7ea9b51e5?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');">
+                </div>
                 <div class="restaurant-info">
                     <h3>Rasoi Veg Thali</h3>
                     <p>Unlimited Veg thali goodness</p>
@@ -147,7 +174,9 @@
                 </div>
             </div>
             <div class="restaurant-card" data-restaurant-id="12" data-restaurant-name="Hotel Naveen" data-rating="3.7">
-                <div class="restaurant-image" style="background-image: url('https://images.unsplash.com/photo-1552566626-52f8b828add9?q=80&w=1974&auto=format&fit=crop');"></div>
+                <div class="restaurant-image"
+                    style="background-image: url('https://images.unsplash.com/photo-1552566626-52f8b828add9?q=80&w=1974&auto=format&fit=crop');">
+                </div>
                 <div class="restaurant-info">
                     <h3>Hotel Naveen</h3>
                     <p>Simple, tasty meals</p>
@@ -160,7 +189,7 @@
             </div>
         </div>
     </div>
-    
+
 
     <!-- Menu Modal -->
     <div class="menu-modal" id="menuModal">
@@ -175,7 +204,8 @@
                 <p>Simulated Payment Screen (Integration with real gateway like Razorpay/Stripe would go here)</p>
                 <button id="payNowButton">Pay Now</button>
             </div>
-            <button class="close-modal" onclick="document.getElementById('menuModal').style.display='none'">Close</button>
+            <button class="close-modal"
+                onclick="document.getElementById('menuModal').style.display='none'">Close</button>
         </div>
     </div>
 
@@ -219,19 +249,19 @@
                 const restaurantId = card.dataset.restaurantId;
                 const restaurantName = card.dataset.restaurantName;
                 const rating = card.dataset.rating;
-    
+
                 const modal = document.getElementById('menuModal');
                 document.getElementById('restaurantName').textContent = restaurantName;
                 document.getElementById('restaurantRating').textContent = `Rating: ${rating} ★`;
                 modal.style.display = 'block';
-    
+
                 const response = await fetch(`/menu/${restaurantId}`);
                 const menuItems = await response.json();
-    
+
                 const menuContainer = document.getElementById('menuItems');
                 menuContainer.innerHTML = '';
                 let total = 0;
-    
+
                 menuItems.forEach(item => {
                     const div = document.createElement('div');
                     div.className = 'menu-item';
@@ -241,7 +271,7 @@
                     `;
                     menuContainer.appendChild(div);
                 });
-    
+
                 window.updateTotal = () => {
                     total = 0;
                     document.querySelectorAll('#menuItems input[type="number"]').forEach(input => {
@@ -251,7 +281,7 @@
                     });
                     document.getElementById('totalPrice').textContent = `Total: ₹${total.toFixed(2)}`;
                 };
-    
+
                 document.getElementById('proceedToPayment').onclick = () => {
                     if (total > 0) {
                         document.getElementById('paymentGateway').style.display = 'block';
@@ -259,7 +289,7 @@
                         alert('Please select at least one item to proceed.');
                     }
                 };
-    
+
                 document.getElementById('payNowButton').onclick = async () => {
                     const selectedItems = [];
                     document.querySelectorAll('#menuItems input[type="number"]').forEach(input => {
@@ -271,7 +301,7 @@
                             });
                         }
                     });
-    
+
                     const orderData = {
                         restaurant_id: restaurantId,
                         items: selectedItems,
@@ -284,7 +314,7 @@
                         body: JSON.stringify(orderData)
                     });
                     const result = await response.json();
-    
+
                     if (response.ok) {
                         alert('Payment Successful! Order placed.');
                         window.location.href = `/order_tracking/${result.order_id}`;
@@ -295,16 +325,16 @@
                 };
             });
         });
-    
+
         // New search functionality
         const searchInput = document.getElementById('searchInput');
         const searchBtn = document.getElementById('searchBtn');
         const restaurantGrid = document.getElementById('restaurantGrid');
-    
+
         function filterRestaurants() {
             const query = searchInput.value.toLowerCase();
             const restaurants = restaurantGrid.querySelectorAll('.restaurant-card');
-    
+
             restaurants.forEach(card => {
                 const name = card.dataset.restaurantName.toLowerCase();
                 if (name.includes(query)) {
@@ -314,13 +344,13 @@
                 }
             });
         }
-    
+
+        // Live search update
+        searchInput.addEventListener('input', filterRestaurants);
+
+        // Fallback for button click (optional, but good for UX)
         searchBtn.addEventListener('click', filterRestaurants);
-        searchInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                filterRestaurants();
-            }
-        });
     </script>
 </body>
+
 </html>
