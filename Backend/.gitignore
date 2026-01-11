@@ -1,0 +1,18 @@
+# Virtual Environment
+venv/
+ENV/
+env/
+
+# Python bytecode
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Flask/Session data
+flask_session/
+instance/
+.env
+
+# ML/Data junk
+.ipynb_checkpoints/

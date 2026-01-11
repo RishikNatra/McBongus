@@ -7,6 +7,7 @@ from routes.restaurant import restaurant_auth
 from routes.menu import menu_bp
 from routes.bongu import bongu_auth 
 from routes.auth import auth
+from routes.recommendations import recommendations_bp
 
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
@@ -23,6 +24,7 @@ app.register_blueprint(auth, url_prefix='/auth')
 app.register_blueprint(bongu_auth, url_prefix='/bongu')
 app.register_blueprint(restaurant_auth, url_prefix='/restaurant')
 app.register_blueprint(menu_bp, url_prefix='/menu')
+app.register_blueprint(recommendations_bp, url_prefix='/')
 
 @app.route('/')
 def index():

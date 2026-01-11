@@ -41,6 +41,18 @@
                 </button>
             </div>
         </div>
+
+        <!-- Suggestions Section -->
+        <div id="suggestionsSection" style="display: none; margin-bottom: 30px;">
+            <h2
+                style="font-family: 'Bacasime Antique', serif; color: #222020; margin-bottom: 15px; border-bottom: 2px solid #6A994E; display: inline-block;">
+                Recommended for You</h2>
+            <div class="suggestions-grid" id="suggestionsGrid"
+                style="display: flex; gap: 20px; overflow-x: auto; padding-bottom: 15px;">
+                <!-- Suggestions injected here -->
+            </div>
+        </div>
+
         <div class="restaurant-grid" id="restaurantGrid">
             <div class="restaurant-card" data-restaurant-id="1" data-restaurant-name="The S Jail Hotel"
                 data-rating="3.9">
@@ -350,6 +362,42 @@
 
         // Fallback for button click
         searchBtn.addEventListener('click', filterRestaurants);
+
+        // Fetch Recommendations
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const response = await fetch('/api/suggestions');
+                const items = await response.json();
+
+                if (items && items.length > 0) {
+                    const section = document.getElementById('suggestionsSection');
+                    const grid = document.getElementById('suggestionsGrid');
+
+                    items.forEach(item => {
+                        const card = document.createElement('div');
+                        card.style.cssText = `
+                            min-width: 200px;
+                            background: #FFF8E8;
+                            border-radius: 10px;
+                            padding: 15px;
+                            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+                            border: 1px solid #AEEC89;
+                            flex-shrink: 0;
+                        `;
+                        card.innerHTML = `
+                            <h4 style="margin: 0 0 5px; color: #6A994E;">${item.item_name}</h4>
+                            <p style="margin: 0 0 10px; font-weight: bold;">₹${item.price}</p>
+                            <span style="font-size: 0.8rem; background: #6A994E; color: white; padding: 2px 8px; border-radius: 10px;">${item.category || 'Special'}</span>
+                        `;
+                        grid.appendChild(card);
+                    });
+
+                    section.style.display = 'block';
+                }
+            } catch (error) {
+                console.error("Failed to load suggestions:", error);
+            }
+        });
     </script>
 </body>
 
