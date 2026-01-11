@@ -1,13 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Restaurant Dashboard - McBongu's</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles-dashboard.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Bacasime+Antique&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Bacasime+Antique&family=Poppins:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
+
 <body>
     <div class="top-bar">
         <div class="mc"><a href="/">McBongu's</a></div>
@@ -34,41 +38,118 @@
             </div>
         </section>
 
+        <!-- Menu Management -->
+        <section class="dashboard-section menu-section">
+            <h2>Menu Management</h2>
+
+            <!-- Add Item Form -->
+            <div class="add-item-form">
+                <h3>Add New Item</h3>
+                <form action="{{ url_for('restaurant_auth.add_item') }}" method="POST" class="add-form-flex">
+                    <div class="form-row">
+                        <input type="text" name="item_name" placeholder="Item Name" required>
+                        <input type="number" name="price" placeholder="Price" step="0.01" required>
+                    </div>
+                    <div class="form-row">
+                        <select name="category" required>
+                            <option value="" disabled selected>Select Category</option>
+                            <option value="Main Course">Main Course</option>
+                            <option value="Appetizer">Appetizer</option>
+                            <option value="Dessert">Dessert</option>
+                            <option value="Beverage">Beverage</option>
+                        </select>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="availability" checked> Available
+                        </label>
+                    </div>
+                    <button type="submit" class="action-btn add-btn">Add Item</button>
+                </form>
+            </div>
+
+            <!-- Menu List -->
+            <h3>Current Menu</h3>
+            <div class="menu-list">
+                {% if menu_items %}
+                {% for item in menu_items %}
+                <div class="menu-item-card">
+                    <form action="{{ url_for('restaurant_auth.edit_item', item_id=item[0]) }}" method="POST"
+                        class="edit-item-form">
+                        <div class="item-header">
+                            <span class="badge {{ item[4]|lower|replace(' ', '-') }}">{{ item[4] }}</span>
+                            <span
+                                class="availability-dot {% if item[3] %}available{% else %}unavailable{% endif %}"></span>
+                        </div>
+                        <input type="text" name="item_name" value="{{ item[1] }}" required
+                            class="edit-input name-input">
+                        <div class="price-row">
+                            <span>₹</span>
+                            <input type="number" name="price" value="{{ item[2] }}" step="0.01" required
+                                class="edit-input price-input">
+                        </div>
+                        <select name="category" required class="edit-input">
+                            <option value="Main Course" {% if item[4]=='Main Course' %}selected{% endif %}>Main Course
+                            </option>
+                            <option value="Appetizer" {% if item[4]=='Appetizer' %}selected{% endif %}>Appetizer
+                            </option>
+                            <option value="Dessert" {% if item[4]=='Dessert' %}selected{% endif %}>Dessert</option>
+                            <option value="Beverage" {% if item[4]=='Beverage' %}selected{% endif %}>Beverage</option>
+                        </select>
+                        <label class="checkbox-label-sm">
+                            <input type="checkbox" name="availability" {% if item[3] %}checked{% endif %}> Available
+                        </label>
+                        <div class="item-actions">
+                            <button type="submit" class="action-btn edit-btn-sm">Update</button>
+                        </div>
+                    </form>
+
+                    <form action="{{ url_for('restaurant_auth.delete_item', item_id=item[0]) }}" method="POST"
+                        onsubmit="return confirm('Are you sure?');" class="delete-form-card">
+                        <button type="submit" class="action-btn delete-btn-sm">Delete</button>
+                    </form>
+                </div>
+                {% endfor %}
+                {% else %}
+                <p class="no-data">No menu items found. Add one above!</p>
+                {% endif %}
+            </div>
+        </section>
+
         <!-- Pending Orders -->
         <section class="dashboard-section orders-section">
             <h2>Pending Orders</h2>
             <div class="order-list">
                 {% if orders %}
-                    {% for order in orders %}
-                    <div class="order-card">
-                        <h3>Order #{{ order[0] }}</h3>
-                        <p><strong>User ID:</strong> {{ order[1] }}</p>
-                        <p><strong>Total Price:</strong> ₹{{ order[2] }}</p>
-                        <p><strong>Order Date:</strong> {{ order[3] }}</p>
-                        <p><strong>Status:</strong> {{ order[4] }}</p>
-                        <p><strong>Items:</strong></p>
-                        <ul class="order-items">
-                            {% for item in order_details[order[0]] %}
-                                <li>{{ item[1] }} - Qty: {{ item[0] }} - ₹{{ item[2] }}</li>
-                            {% endfor %}
-                        </ul>
-                        <div class="order-actions">
-                            <form method="POST" action="{{ url_for('restaurant_auth.order_action', order_id=order[0]) }}">
-                                <input type="hidden" name="action" value="accept">
-                                <button type="submit" class="action-btn accept-btn">Accept</button>
-                            </form>
-                            <form method="POST" action="{{ url_for('restaurant_auth.order_action', order_id=order[0]) }}">
-                                <input type="hidden" name="action" value="reject">
-                                <button type="submit" class="action-btn reject-btn">Reject</button>
-                            </form>
-                        </div>
+                {% for order in orders %}
+                <div class="order-card">
+                    <h3>Order #{{ order[0] }}</h3>
+                    <p><strong>User ID:</strong> {{ order[1] }}</p>
+                    <p><strong>Total Price:</strong> ₹{{ order[2] }}</p>
+                    <p><strong>Order Date:</strong> {{ order[3] }}</p>
+                    <p><strong>Status:</strong> {{ order[4] }}</p>
+                    <p><strong>Items:</strong></p>
+                    <ul class="order-items">
+                        {% for item in order_details[order[0]] %}
+                        <li>{{ item[1] }} - Qty: {{ item[0] }} - ₹{{ item[2] }}</li>
+                        {% endfor %}
+                    </ul>
+                    <div class="order-actions">
+                        <form method="POST" action="{{ url_for('restaurant_auth.order_action', order_id=order[0]) }}">
+                            <input type="hidden" name="action" value="accept">
+                            <button type="submit" class="action-btn accept-btn">Accept</button>
+                        </form>
+                        <form method="POST" action="{{ url_for('restaurant_auth.order_action', order_id=order[0]) }}">
+                            <input type="hidden" name="action" value="reject">
+                            <button type="submit" class="action-btn reject-btn">Reject</button>
+                        </form>
                     </div>
-                    {% endfor %}
+                </div>
+                {% endfor %}
                 {% else %}
-                    <p class="no-data">No pending orders at the moment.</p>
+                <p class="no-data">No pending orders at the moment.</p>
                 {% endif %}
             </div>
         </section>
     </div>
 </body>
+
 </html>

@@ -42,6 +42,7 @@ CREATE TABLE Menu (
     item_name VARCHAR(100) NOT NULL,
     price DECIMAL(10,2) NOT NULL,
     availability BOOLEAN DEFAULT TRUE,
+    category VARCHAR(50),
     FOREIGN KEY (restaurant_id) REFERENCES Restaurants(id) ON DELETE CASCADE
 );
 -- Orders Table

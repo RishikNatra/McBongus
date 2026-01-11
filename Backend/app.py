@@ -74,7 +74,7 @@ def get_menu(restaurant_id):
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
     try:
-        cursor.execute("SELECT id, item_name, price, availability FROM Menu WHERE restaurant_id = %s", (restaurant_id,))
+        cursor.execute("SELECT id, item_name, price, availability FROM Menu WHERE restaurant_id = %s AND availability = 1", (restaurant_id,))
         menu_items = cursor.fetchall()
         
         if not menu_items:

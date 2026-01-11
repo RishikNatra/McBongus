@@ -81,7 +81,14 @@ def restaurant_dashboard():
             items = cursor.fetchall()
             order_details[order_id] = items  # Store items as (quantity, item_name, price) tuples
 
-        return render_template("restaurant-main.html", restaurant=restaurant_details, orders=pending_orders, order_details=order_details)
+        # Fetch menu items for the restaurant
+        cursor.execute("SELECT id, item_name, price, availability, category FROM Menu WHERE restaurant_id = %s", (session['restaurant_id'],))
+        menu_items = cursor.fetchall()
+        
+        # Group menu items by category (optional, but good for display, or let frontend handle it)
+        # For now, passing raw list to template
+        
+        return render_template("restaurant-main.html", restaurant=restaurant_details, orders=pending_orders, order_details=order_details, menu_items=menu_items)
     finally:
         cursor.close()
         conn.close()  # Ensure connection is closed
@@ -156,3 +163,79 @@ def restaurant_register():
 def restaurant_logout():
     session.clear()
     return redirect(url_for('restaurant_auth.restaurant_login'))
+
+@restaurant_auth.route('/restaurant/add-item', methods=['POST'])
+def add_item():
+    if 'restaurant_id' not in session:
+        return redirect(url_for('restaurant_auth.restaurant_login'))
+
+    item_name = request.form.get('item_name')
+    price = request.form.get('price')
+    category = request.form.get('category')
+    # availability is usually true by default on add, or checkbox
+    availability = 1 if 'availability' in request.form else 0
+
+    if not item_name or not price:
+        return "Item name and price are required. <a href='/restaurant/restaurant-dashboard'>Back</a>"
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("""
+            INSERT INTO Menu (restaurant_id, item_name, price, availability, category)
+            VALUES (%s, %s, %s, %s, %s)
+        """, (session['restaurant_id'], item_name, price, availability, category))
+        conn.commit()
+    except Exception as e:
+        print(f"Error adding item: {e}") 
+    finally:
+        cursor.close()
+        conn.close()
+
+    return redirect(url_for('restaurant_auth.restaurant_dashboard'))
+
+@restaurant_auth.route('/restaurant/edit-item/<int:item_id>', methods=['POST'])
+def edit_item(item_id):
+    if 'restaurant_id' not in session:
+        return redirect(url_for('restaurant_auth.restaurant_login'))
+
+    item_name = request.form.get('item_name')
+    price = request.form.get('price')
+    category = request.form.get('category')
+    availability = 1 if 'availability' in request.form else 0
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        # Verify ownership
+        cursor.execute("SELECT id FROM Menu WHERE id = %s AND restaurant_id = %s", (item_id, session['restaurant_id']))
+        if not cursor.fetchone():
+            return "Unauthorized or Item not found."
+
+        cursor.execute("""
+            UPDATE Menu 
+            SET item_name = %s, price = %s, availability = %s, category = %s
+            WHERE id = %s
+        """, (item_name, price, availability, category, item_id))
+        conn.commit()
+    finally:
+        cursor.close()
+        conn.close()
+
+    return redirect(url_for('restaurant_auth.restaurant_dashboard'))
+
+@restaurant_auth.route('/restaurant/delete-item/<int:item_id>', methods=['POST'])
+def delete_item(item_id):
+    if 'restaurant_id' not in session:
+        return redirect(url_for('restaurant_auth.restaurant_login'))
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("DELETE FROM Menu WHERE id = %s AND restaurant_id = %s", (item_id, session['restaurant_id']))
+        conn.commit()
+    finally:
+        cursor.close()
+        conn.close()
+    
+    return redirect(url_for('restaurant_auth.restaurant_dashboard'))
