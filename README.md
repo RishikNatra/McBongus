@@ -1,7 +1,7 @@
 # McBongu's
 McBongus - Food Delivery Platform
 
-McBongus is a web-based food delivery platform built with Flask and MySQL, allowing users to browse restaurants, place orders, and track deliveries. Restaurants can manage orders, and delivery partners (Bongus) can accept and update delivery statuses. This project includes a responsive frontend and a robust backend with user authentication, order management, and database integration.
+McBongus is a web-based food delivery platform built with Flask and MySQL, allowing users to browse restaurants, place orders, and track deliveries. Restaurants can manage orders, and delivery partners (Bongus) can accept and update delivery statuses. This project includes a responsive frontend and a robust backend with user authentication, order management, recommendation system using User-Based or Item-Based Collaborative Filtering (Cosine Similarity) and database integration.
 
 # Table of Contents
 - Project Overview
