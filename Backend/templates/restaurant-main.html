@@ -53,10 +53,9 @@
                     <div class="form-row">
                         <select name="category" required>
                             <option value="" disabled selected>Select Category</option>
-                            <option value="Main Course">Main Course</option>
-                            <option value="Appetizer">Appetizer</option>
-                            <option value="Dessert">Dessert</option>
-                            <option value="Beverage">Beverage</option>
+                            {% for cat in categories %}
+                            <option value="{{ cat }}">{{ cat }}</option>
+                            {% endfor %}
                         </select>
                         <label class="checkbox-label">
                             <input type="checkbox" name="availability" checked> Available
@@ -87,12 +86,9 @@
                                 class="edit-input price-input">
                         </div>
                         <select name="category" required class="edit-input">
-                            <option value="Main Course" {% if item[4]=='Main Course' %}selected{% endif %}>Main Course
-                            </option>
-                            <option value="Appetizer" {% if item[4]=='Appetizer' %}selected{% endif %}>Appetizer
-                            </option>
-                            <option value="Dessert" {% if item[4]=='Dessert' %}selected{% endif %}>Dessert</option>
-                            <option value="Beverage" {% if item[4]=='Beverage' %}selected{% endif %}>Beverage</option>
+                            {% for cat in categories %}
+                            <option value="{{ cat }}" {% if item[4]==cat %}selected{% endif %}>{{ cat }}</option>
+                            {% endfor %}
                         </select>
                         <label class="checkbox-label-sm">
                             <input type="checkbox" name="availability" {% if item[3] %}checked{% endif %}> Available

@@ -1,10 +1,28 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session
 from flask_bcrypt import Bcrypt
 import mysql.connector
+import csv
+import os
 from db import get_db_connection  # Import centralized DB connection function
 
 restaurant_auth = Blueprint('restaurant_auth', __name__)
 bcrypt = Bcrypt()
+
+def get_categories():
+    categories = []
+    try:
+        csv_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'ML', 'categories.csv')
+        with open(csv_path, 'r', newline='') as csvfile:
+            reader = csv.reader(csvfile)
+            next(reader, None)  # Skip header
+            for row in reader:
+                if row:
+                    categories.append(row[0])
+    except Exception as e:
+        print(f"Error reading categories: {e}")
+        # Fallback categories if CSV fails
+        categories = ["Main Course", "Appetizer", "Dessert", "Beverage"]
+    return sorted(list(set(categories)))
 
 @restaurant_auth.route('/restaurant-login', methods=['GET', 'POST'])
 def restaurant_login():
@@ -88,7 +106,9 @@ def restaurant_dashboard():
         # Group menu items by category (optional, but good for display, or let frontend handle it)
         # For now, passing raw list to template
         
-        return render_template("restaurant-main.html", restaurant=restaurant_details, orders=pending_orders, order_details=order_details, menu_items=menu_items)
+        categories = get_categories()
+
+        return render_template("restaurant-main.html", restaurant=restaurant_details, orders=pending_orders, order_details=order_details, menu_items=menu_items, categories=categories)
     finally:
         cursor.close()
         conn.close()  # Ensure connection is closed
