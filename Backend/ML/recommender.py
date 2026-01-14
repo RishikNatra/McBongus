@@ -34,49 +34,81 @@ class Recommender:
 
         conn = None
         try:
-            # Get user's purchase history
+            # Get user's purchase history WITH CATEGORY
             conn = get_db_connection()
             cursor = conn.cursor(dictionary=True)
             cursor.execute("""
-                SELECT menu_id, SUM(quantity) as quantity
+                SELECT oi.menu_id, SUM(oi.quantity) as quantity, m.category
                 FROM Orders o
                 JOIN Order_Items oi ON o.id = oi.order_id
+                JOIN Menu m ON oi.menu_id = m.id
                 WHERE o.user_id = %s
-                GROUP BY menu_id
+                GROUP BY oi.menu_id, m.category
             """, (user_id,))
             user_items = cursor.fetchall()
             
             if not user_items:
                 return []
 
+            # Calculate Category Preferences
+            # Format: {'Pizza': 10, 'Burgers': 2, ...}
+            category_counts = {}
+            total_qty = 0
+            user_purchased_ids = set()
+            
+            for item in user_items:
+                cat = item['category']
+                qty = float(item['quantity'])
+                category_counts[cat] = category_counts.get(cat, 0) + qty
+                total_qty += qty
+                user_purchased_ids.add(item['menu_id'])
+
+            # Normalize to get weights (0 to 1)
+            # e.g. Pizza: 0.8, Burgers: 0.2
+            category_weights = {k: v / total_qty for k, v in category_counts.items()}
+            
+            # Fetch ALL item categories for lookup
+            # Map: item_id -> category
+            cursor.execute("SELECT id, category FROM Menu")
+            all_items = cursor.fetchall()
+            item_category_map = {item['id']: item['category'] for item in all_items}
+
             # Tally scores
             # Score = Sum(Similarity(Item_i, Candidate_j) * Qty_i)
+            # BOOST: FinalScore = Score * (1 + BOOST_FACTOR * CategoryWeight(Category_j))
             scores = {}
-            user_purchased_ids = {item['menu_id'] for item in user_items}
 
             for item in user_items:
                 menu_id = item['menu_id']
-                qty = item['quantity']
+                qty = float(item['quantity'])
                 
                 # Check if this menu_id exists in our model (it might be new)
                 if menu_id in self.similarity_df.index:
                     similar_items = self.similarity_df[menu_id]
                     
                     for sim_id, score in similar_items.items():
-                        # Optional: Don't recommend items user has already bought?
-                        # For food, re-ordering is common, so we MIGHT want to include them.
-                        # But prompt implies "suggestions" - usually new things or favorites.
-                        # Let's simple include everything but boost un-bought?
-                        # Or just standard score.
-                        
                         if sim_id == menu_id: continue 
                         
                         if sim_id not in scores:
                             scores[sim_id] = 0
                         scores[sim_id] += score * qty
 
+            # Apply Category Boost
+            # This ensures items in user's favorite categories float to the top
+            BOOST_FACTOR = 2.0 # Significant boost
+            
+            final_scores = {}
+            for item_id, raw_score in scores.items():
+                cat = item_category_map.get(item_id)
+                boost = 1.0
+                if cat and cat in category_weights:
+                    # e.g. 1 + 2.0 * 0.8 = 2.6x multiplier for Pizza items
+                    boost = 1.0 + (BOOST_FACTOR * category_weights[cat])
+                
+                final_scores[item_id] = raw_score * boost
+
             # Sort by score
-            sorted_items = sorted(scores.items(), key=lambda x: x[1], reverse=True)
+            sorted_items = sorted(final_scores.items(), key=lambda x: x[1], reverse=True)
             
             # Return top N IDs
             return [item[0] for item in sorted_items[:n]]
